@@ -1,22 +1,34 @@
+// golang-backend/main.go
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
+// Struktura odpowiedzi JSON
+type Message struct {
+	Message string `json:"message"`
+}
+
+func suma(lista ...int) int {
+	sum := 0
+	for _, j := range lista {
+		sum += j
+	}
+	return sum
+}
+
+// Handler dla endpointu "/api/message"
+func messageHandler(w http.ResponseWriter, r *http.Request) {
+	string := fmt.Sprintf("%d", suma(1, 2, 4, 6))
+	response := Message{string}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func main() {
-	r := gin.Default()
-
-	// Endpoint do obliczeń sumy
-	r.GET("/api/sum", func(c *gin.Context) {
-		numbers := []int{1, 2, 3, 4, 5} // Przykładowe dane
-		result := sum(numbers)
-		c.JSON(http.StatusOK, gin.H{
-			"sum": result,
-		})
-	})
-
-	r.Run(":8080") // Uruchom serwer na porcie 8080
+	http.HandleFunc("/api/message", messageHandler)
+	http.ListenAndServe(":3000", nil) // Serwer uruchomi się na porcie 3000
 }
