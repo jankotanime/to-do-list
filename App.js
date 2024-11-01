@@ -36,6 +36,19 @@ export default function App() {
           />
         </TouchableOpacity>
         <View style={styles.main_container}>
+          <View style={styles.title}>
+            <Text style={styles.deadline}>20:00</Text>
+            <Text style={styles.text_main}>AAAAA</Text>
+          </View>
+          <View style={styles.title}>
+            <Text style={styles.text_main}>AAAAA</Text>
+          </View>
+          <View style={styles.title}>
+            <Text style={styles.text_main}>AAAAA</Text>
+          </View>
+          <View style={styles.title}>
+            <Text style={styles.text_main}>AAAAA</Text>
+          </View>
           <Text style={styles.text_main}>{message ? message : 'Ładowanie...'}</Text>
           <Button title="button" onPress={() => {setX(x + 1);}} />
         </View>
@@ -45,6 +58,27 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  title: {
+    backgroundColor: 'rgb(250, 230, 210)',
+    width: '100%',
+    height: 80,
+    // Cień dla iOS
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    // Cień dla Androida
+    elevation: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
+  deadline: {
+    width: 40,
+    height: '100%',
+  },
   screen: {
     backgroundColor: 'rgb(250, 230, 210)',
     alignItems: 'center', 
@@ -69,20 +103,8 @@ const styles = StyleSheet.create({
   },
   main_container: {
     backgroundColor: 'rgb(250, 230, 210)',
-    alignItems: 'center', 
-    justifyContent: 'center',
     width: '100%',
     height: '92.5%',
-      // Cień dla iOS
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 5,
-      },
-      shadowOpacity: 0.3,
-      shadowRadius: 6,
-      // Cień dla Androida
-      elevation: 10,
   },
   main: {  
     flex: 1, 
@@ -90,6 +112,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   text_main: {
+    width: '40%',
     color: 'rgb(30, 30, 30)',
     fontSize: '25%',
   }
