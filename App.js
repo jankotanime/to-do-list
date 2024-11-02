@@ -2,6 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Text, View, Image, TouchableOpacity, Alert, StyleSheet, Button } from 'react-native';
 import axios from 'axios';
 
+const task = (done, deadline, plot) => {
+  const full_task = (<View style={styles.title}>
+  <Text style={styles.deadline}>{deadline}</Text>
+  <Text style={styles.text_main}>{plot}</Text>
+  </View>)
+  return full_task
+}
+
 export default function App() {
   const [message, setMessage] = useState('');
   const [x, setX] = useState(3);
@@ -36,10 +44,7 @@ export default function App() {
           />
         </TouchableOpacity>
         <View style={styles.main_container}>
-          <View style={styles.title}>
-            <Text style={styles.deadline}>20:00</Text>
-            <Text style={styles.text_main}>AAAAA</Text>
-          </View>
+          {task("false", "20:00", "Sigma")}
           <View style={styles.title}>
             <Text style={styles.text_main}>AAAAA</Text>
           </View>
@@ -59,6 +64,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   title: {
+    flexDirection: "row",
     backgroundColor: 'rgb(250, 230, 210)',
     width: '100%',
     height: 80,
@@ -76,8 +82,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   deadline: {
-    width: 40,
+    flex: 1,
     height: '100%',
+    width: 40,
   },
   screen: {
     backgroundColor: 'rgb(250, 230, 210)',
@@ -112,7 +119,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   text_main: {
-    width: '40%',
+    flex: 1,
+    height: '100%',
     color: 'rgb(30, 30, 30)',
     fontSize: '25%',
   }
