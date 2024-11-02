@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, Image, TouchableOpacity, Alert, StyleSheet, Button } from 'react-native';
+import { ScrollView, Text, View, Image, TouchableOpacity, Alert, StyleSheet, Button } from 'react-native';
 import axios from 'axios';
-
-const task = (done, deadline, plot) => {
-  const full_task = (<View style={styles.title}>
-  <Text style={styles.deadline}>{deadline}</Text>
-  <Text style={styles.text_main}>{plot}</Text>
-  </View>)
-  return full_task
-}
+import CheckBox from 'expo-checkbox';
 
 export default function App() {
   const [message, setMessage] = useState('');
   const [x, setX] = useState(3);
+  const [isChecked, setChecked] = useState(false);
+  const task = (done, deadline, plot) => {
+    const full_task = (<View style={styles.title}>
+    <CheckBox
+      style={styles.checkbox}
+      value={isChecked}
+      onValueChange={setChecked}
+      color={isChecked ? "#4630EB" : undefined}
+    />
+    <Text style={styles.deadline}>{deadline}</Text>
+    <View style={styles.text_container}>
+      <Text style={styles.text_main}>{plot}</Text>
+    </View>
+    </View>)
+    return full_task
+  }
   const settingsButton = () => {
     Alert.alert('ustawienia');
   }
@@ -36,6 +45,8 @@ export default function App() {
 
   return (
     <View style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}
+  style={styles.scrollView}>
       <View style={styles.mask}>
         <TouchableOpacity style={styles.button} onPress={settingsButton}>
           <Image
@@ -44,6 +55,12 @@ export default function App() {
           />
         </TouchableOpacity>
         <View style={styles.main_container}>
+          {task("false", "20:00", "Sigma")}
+          {task("false", "20:00", "Sigma")}
+          {task("false", "20:00", "Sigma")}
+          {task("false", "20:00", "Sigma")}
+          {task("false", "20:00", "Sigma")}
+          {task("false", "20:00", "Sigma")}
           {task("false", "20:00", "Sigma")}
           <View style={styles.title}>
             <Text style={styles.text_main}>AAAAA</Text>
@@ -58,13 +75,30 @@ export default function App() {
           <Button title="button" onPress={() => {setX(x + 1);}} />
         </View>
       </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollViewContent: {
+    marginRight: 0, // Dostosuj to, aby zwiększyć miejsce na przewijanie
+  },
+  scrollView: {
+    marginHorizontal: 0, // Marginesy wokół ScrollView
+  },
+  text_container: {
+    flex: 1,
+    borderLeftWidth: 1,
+    borderLeftColorColor: 'rgb(0, 0, 0)',
+    paddingLeft: 10,
+    alignItems: 'center', 
+    justifyContent: 'center',
+    height: '100%',
+  },
   title: {
     flexDirection: "row",
+    gap: 10,
     backgroundColor: 'rgb(250, 230, 210)',
     width: '100%',
     height: 80,
@@ -81,10 +115,14 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
   },
+  checkbox: {
+    marginLeft: 10,
+    alignSelf: 'center',
+    height: 20,
+  },
   deadline: {
-    flex: 1,
-    height: '100%',
-    width: 40,
+    fontSize: 20,
+    alignSelf: 'center',
   },
   screen: {
     backgroundColor: 'rgb(250, 230, 210)',
@@ -119,9 +157,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   text_main: {
-    flex: 1,
-    height: '100%',
+    width: '100%',
+    alignSelf: 'center',
     color: 'rgb(30, 30, 30)',
-    fontSize: '25%',
+    fontSize: 20,
+    textAlign: 'center'
   }
 });
