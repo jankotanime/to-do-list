@@ -56,9 +56,9 @@ export default function App() {
         </TouchableOpacity>
         <View style={styles.main_container}>
           {task("false", "20:00", "Sigma")}
-          {task("false", "20:00", "Sigma")}
-          {task("false", "20:00", "Sigma")}
-          {task("false", "20:00", "Sigma")}
+          {task("false", "20:00", "Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma ")}
+          {task("false", "20:00", "Sigma Sigma Sigma Sigma Sigma ")}
+          {task("false", "20:00", "Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma ")}
           {task("false", "20:00", "Sigma")}
           {task("false", "20:00", "Sigma")}
           {task("false", "20:00", "Sigma")}
@@ -82,10 +82,15 @@ export default function App() {
 
 const styles = StyleSheet.create({
   scrollViewContent: {
-    marginRight: 0, // Dostosuj to, aby zwiększyć miejsce na przewijanie
+    padding: 0,
+    marginLeft: 20,
+    marginTop: 40,
+    paddingBottom: 160,
   },
   scrollView: {
+    padding: 0,
     marginHorizontal: 0, // Marginesy wokół ScrollView
+    width: '100%',
   },
   text_container: {
     flex: 1,
@@ -98,10 +103,10 @@ const styles = StyleSheet.create({
   },
   title: {
     flexDirection: "row",
+    flex: 1,
     gap: 10,
     backgroundColor: 'rgb(250, 230, 210)',
     width: '100%',
-    height: 80,
     // Cień dla iOS
     shadowColor: '#000',
     shadowOffset: {
@@ -125,6 +130,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   screen: {
+    margin: 0,
+    padding: 0,
     backgroundColor: 'rgb(250, 230, 210)',
     alignItems: 'center', 
     justifyContent: 'center',
