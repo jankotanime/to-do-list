@@ -1,7 +1,9 @@
+import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, View, Image, TouchableOpacity, Alert, StyleSheet, Button } from 'react-native';
 import axios from 'axios';
 import CheckBox from 'expo-checkbox';
+import SideDrawer from './frontend/SideDraw.js';
 
 export default function App() {
   const [message, setMessage] = useState('');
@@ -48,12 +50,6 @@ export default function App() {
       <ScrollView contentContainerStyle={styles.scrollViewContent}
   style={styles.scrollView}>
       <View style={styles.mask}>
-        <TouchableOpacity style={styles.button} onPress={settingsButton}>
-          <Image
-            source={require('./images/test.jpg')}
-            style={styles.image}
-          />
-        </TouchableOpacity>
         <View style={styles.main_container}>
           {task("false", "20:00", "Sigma")}
           {task("false", "20:00", "Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma ")}
@@ -74,18 +70,15 @@ export default function App() {
           <Text style={styles.text_main}>{message ? message : 'Ładowanie...'}</Text>
           <Button title="button" onPress={() => {setX(x + 1);}} />
         </View>
-      </View>
+      </View> 
       </ScrollView>
+      <SideDrawer />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   scrollViewContent: {
-    padding: 0,
-    marginLeft: 20,
-    marginTop: 40,
-    paddingBottom: 160,
   },
   scrollView: {
     padding: 0,
@@ -95,7 +88,7 @@ const styles = StyleSheet.create({
   text_container: {
     flex: 1,
     borderLeftWidth: 1,
-    borderLeftColorColor: 'rgb(0, 0, 0)',
+    borderLeftColor: 'rgb(210, 210, 210)',
     paddingLeft: 10,
     alignItems: 'center', 
     justifyContent: 'center',
@@ -105,7 +98,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
     gap: 10,
-    backgroundColor: 'rgb(250, 230, 210)',
+    backgroundColor: 'rgb(250, 250, 255)',
     width: '100%',
     // Cień dla iOS
     shadowColor: '#000',
@@ -121,7 +114,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   checkbox: {
-    marginLeft: 10,
+    marginLeft: 0,
     alignSelf: 'center',
     height: 20,
   },
@@ -132,29 +125,26 @@ const styles = StyleSheet.create({
   screen: {
     margin: 0,
     padding: 0,
-    backgroundColor: 'rgb(250, 230, 210)',
+    backgroundColor: 'rgb(250, 250, 255)',
     alignItems: 'center', 
     justifyContent: 'center',
     width: '100%',
     height: '100%'
   },
   mask: {
+    paddingBottom: 160,
+    marginLeft: 30,
+    marginTop: 60,
     justifyContent: 'space-between',
     height: '90%',
-    width: '95%',
+    width: '90%',
     alignItems: 'center',
   },
   button: {
     height: 40,
     width: '100%',
   },
-  image: {
-    height: 40,
-    width: 40,
-    alignSelf: 'flex-end'
-  },
   main_container: {
-    backgroundColor: 'rgb(250, 230, 210)',
     width: '100%',
     height: '92.5%',
   },
