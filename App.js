@@ -12,10 +12,10 @@ export default function App() {
   const task = (done, deadline, plot) => {
     const full_task = (<View style={styles.title}>
     <CheckBox
+      color={isChecked ? 'rgb(80, 120, 80)' : undefined}
       style={styles.checkbox}
       value={isChecked}
       onValueChange={setChecked}
-      color={isChecked ? "#4630EB" : undefined}
     />
     <Text style={styles.deadline}>{deadline}</Text>
     <View style={styles.text_container}>
@@ -24,9 +24,7 @@ export default function App() {
     </View>)
     return full_task
   }
-  const settingsButton = () => {
-    Alert.alert('ustawienia');
-  }
+
   useEffect(() => {
     const fetchMessage = () => {
       // Twój lokalny adres IP oraz port backendu
@@ -95,6 +93,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   title: {
+    borderRadius: 10,
     flexDirection: "row",
     flex: 1,
     gap: 10,
@@ -114,9 +113,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   checkbox: {
+    borderRadius: 5,
     marginLeft: 0,
     alignSelf: 'center',
     height: 20,
+    borderColor: 'rgb(110, 110, 110)',
   },
   deadline: {
     fontSize: 20,
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     color: 'rgb(30, 30, 30)',
-    fontSize: 20,
+    fontSize: 16,
     textAlign: 'center'
   }
 });
