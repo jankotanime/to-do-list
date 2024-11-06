@@ -6,11 +6,11 @@ import CheckBox from 'expo-checkbox';
 import SideDrawer from './frontend/SideDraw.js';
 
 export default function App() {
-  const [message, setMessage] = useState('');
+  const [tasks, setTasks] = useState([]);
   const [x, setX] = useState(3);
   const [isChecked, setChecked] = useState(false);
-  const task = (done, deadline, plot) => {
-    const full_task = (<View style={styles.title}>
+  const addTask = (id, done, deadline, plot) => {
+    const full_task = (<View key={id} style={styles.title}>
     <CheckBox
       color={isChecked ? 'rgb(80, 120, 80)' : undefined}
       style={styles.checkbox}
@@ -33,7 +33,9 @@ export default function App() {
       // Wykonanie zapytania GET
       axios.get(serverUrl)
         .then(response => {
-          setMessage(response.data.message);
+          for (i in response.data) {
+            setTasks(response.data)
+          }
         })
         .catch(error => {
           console.error('Błąd połączenia z serwerem:', error);
@@ -50,13 +52,9 @@ export default function App() {
   style={styles.scrollView}>
       <View style={styles.mask}>
         <View style={styles.main_container}>
-          {task("false", "20:00", "Sigma")}
-          {task("false", "20:00", "Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma ")}
-          {task("false", "20:00", "Sigma Sigma Sigma Sigma Sigma ")}
-          {task("false", "20:00", "Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma Sigma ")}
-          {task("false", "20:00", "Sigma")}
-          {task("false", "20:00", "Sigma")}
-          {task("false", "20:00", "Sigma")}
+          {tasks.map((task) => (
+            addTask(task.id, "false", "20:00", task.plot)
+          ))}
           <View style={styles.title}>
             <Text style={styles.text_main}>AAAAA</Text>
           </View>
@@ -66,7 +64,6 @@ export default function App() {
           <View style={styles.title}>
             <Text style={styles.text_main}>AAAAA</Text>
           </View>
-          <Text style={styles.text_main}>{message ? message : 'Ładowanie...'}</Text>
           <Button title="button" onPress={() => {setX(x + 1);}} />
         </View>
       </View> 
