@@ -1,9 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { Alert, TouchableOpacity, Image, Animated, View, Text, StyleSheet, Dimensions, PanResponder, ScrollView } from 'react-native';
+import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, View, Text, StyleSheet, Dimensions, PanResponder, ScrollView } from 'react-native';
+import axios from 'axios';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function SideDrawer() {
+  const [inputText, setInputText] = useState('');
   const translateX = useRef(new Animated.Value(-SCREEN_WIDTH * 0.75)).current; // Start panelu poza ekranem
   const [isSettings, setSettings] = useState(false);
   const [addTask, setTask] = useState(false);
@@ -58,6 +60,24 @@ export default function SideDrawer() {
         <View style={styles.container}>
             <Text style={styles.text}>Add new task</Text>
         </View>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Wprowadź treśc zadania"
+          value={inputText}
+          onChangeText={text => setInputText(text)}
+        />
+        <Button title="Dodaj" onPress={() => {
+          const serverUrl = `http://192.168.0.13:3000/api/message`; // Twój adres backendu 
+          const data = { data: inputText }
+          setInputText('')
+          axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
+            .then(response => {
+              console.log(response.data);
+            })
+            .catch(error => {
+              console.error('Błąd połączenia z serwerem:', error);
+            });
+        }} />
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -65,6 +85,15 @@ export default function SideDrawer() {
 }
 
 const styles = StyleSheet.create({
+  inputText: {
+    height: 40,
+    width: '100%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingLeft: 10,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
   text: {
     fontSize: 16
   },

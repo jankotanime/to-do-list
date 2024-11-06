@@ -160,3 +160,5 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   }
 });
+
+// TODO: Dodać sql do repo
