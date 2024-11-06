@@ -25,26 +25,26 @@ export default function App() {
     return full_task
   }
 
-  useEffect(() => {
-    const fetchMessage = () => {
-      // Twój lokalny adres IP oraz port backendu
-      // const serverUrl = `http://192.168.0.13:3000/api/message?x=${x}`; // Wstaw swój adres IP
-      const serverUrl = `http://192.168.0.13:3000/api/message`; // Wstaw swój adres IP
-      // Wykonanie zapytania GET
-      axios.get(serverUrl)
-        .then(response => {
-          for (i in response.data) {
-            setTasks(response.data)
-          }
-        })
-        .catch(error => {
-          console.error('Błąd połączenia z serwerem:', error);
-          setMessage('Błąd połączenia z serwerem');
-        });
-    };
+  const fetchMessage = () => {
+    // Twój lokalny adres IP oraz port backendu
+    // const serverUrl = `http://192.168.0.13:3000/api/message?x=${x}`; // Wstaw swój adres IP
+    const serverUrl = `http://192.168.0.13:3000/api/message`; // Wstaw swój adres IP
+    // Wykonanie zapytania GET
+    axios.get(serverUrl)
+      .then(response => {
+        for (i in response.data) {
+          setTasks(response.data)
+        }
+      })
+      .catch(error => {
+        console.error('Błąd połączenia z serwerem:', error);
+        setMessage('Błąd połączenia z serwerem');
+      });
+  };
 
+  useEffect(() => {
     fetchMessage();
-  }, [x]);
+  }, []);
 
   return (
     <View style={styles.screen}>
@@ -68,7 +68,7 @@ export default function App() {
         </View>
       </View> 
       </ScrollView>
-      <SideDrawer />
+      <SideDrawer fetchMessage={fetchMessage}/>
     </View>
   );
 }

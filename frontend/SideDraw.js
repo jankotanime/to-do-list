@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
-export default function SideDrawer() {
+export default function SideDrawer({fetchMessage}) {
   const [inputText, setInputText] = useState('');
   const translateX = useRef(new Animated.Value(-SCREEN_WIDTH * 0.75)).current; // Start panelu poza ekranem
   const [isSettings, setSettings] = useState(false);
@@ -72,7 +72,7 @@ export default function SideDrawer() {
           setInputText('')
           axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
             .then(response => {
-              console.log(response.data);
+              fetchMessage()
             })
             .catch(error => {
               console.error('Błąd połączenia z serwerem:', error);
