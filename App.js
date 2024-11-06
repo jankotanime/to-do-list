@@ -28,7 +28,8 @@ export default function App() {
   useEffect(() => {
     const fetchMessage = () => {
       // Twój lokalny adres IP oraz port backendu
-      const serverUrl = `http://192.168.1.117:3000/api/message?x=${x}`; // Wstaw swój adres IP
+      // const serverUrl = `http://192.168.0.13:3000/api/message?x=${x}`; // Wstaw swój adres IP
+      const serverUrl = `http://192.168.0.13:3000/api/message`; // Wstaw swój adres IP
       // Wykonanie zapytania GET
       axios.get(serverUrl)
         .then(response => {
