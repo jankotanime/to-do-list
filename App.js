@@ -4,19 +4,19 @@ import { ScrollView, Text, View, Image, TouchableOpacity, Alert, StyleSheet, But
 import axios from 'axios';
 import CheckBox from 'expo-checkbox';
 import SideDrawer from './frontend/SideDraw.js';
+import test from './frontend/api.js'
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
   const [x, setX] = useState(3);
-  const [isChecked, setChecked] = useState(false);
   const addTask = (id, done, deadline, plot) => {
     const full_task = (<View key={id} style={styles.title}>
-    <CheckBox
-      color={isChecked ? 'rgb(80, 120, 80)' : undefined}
-      style={styles.checkbox}
-      value={isChecked}
-      onValueChange={setChecked}
-    />
+      <CheckBox
+        color={done ? 'rgb(80, 120, 80)' : undefined}
+        style={styles.checkbox}
+        value={done}
+        onValueChange={() => test(id, done, deadline, plot, fetchMessage)}
+      />
     <Text style={styles.deadline}>{deadline}</Text>
     <View style={styles.text_container}>
       <Text style={styles.text_main}>{plot}</Text>
@@ -53,7 +53,7 @@ export default function App() {
       <View style={styles.mask}>
         <View style={styles.main_container}>
           {tasks.map((task) => (
-            addTask(task.id, "false", "20:00", task.plot)
+            addTask(task.id, task.done, "20:00", task.plot)
           ))}
           <View style={styles.title}>
             <Text style={styles.text_main}>AAAAA</Text>
@@ -74,6 +74,11 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  test: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'black'
+  },
   scrollViewContent: {
   },
   scrollView: {

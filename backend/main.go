@@ -110,6 +110,34 @@ func addNewTaskToDB(plot string, deadline time.Time) error {
 	return nil
 }
 
+func CheckTaskToDB(id int, done bool) error {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Błąd przy ładowaniu pliku .env")
+	}
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
+
+	dbpool, err := pgxpool.New(context.Background(), dsn)
+	if err != nil {
+		log.Fatalf("Błąd połączenia z bazą danych: %v\n", err)
+	}
+	defer dbpool.Close()
+
+	// Zapytanie do wstawienia nowego zadania
+	_, err = dbpool.Exec(context.Background(), "UPDATE tasks SET done=$2 WHERE id=$1", id, done)
+	if err != nil {
+		return fmt.Errorf("błąd podczas dodawania zadania: %v", err)
+	}
+
+	return nil
+}
+
 // Handler dla endpointu "/api/message"
 func messageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
@@ -126,24 +154,29 @@ func messageHandler(w http.ResponseWriter, r *http.Request) {
 			json.NewEncoder(w).Encode(response)
 		}
 	} else if r.Method == "POST" {
-		var requestData RequestData
+		var requestData User
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Nie udało się odczytać danych", http.StatusBadRequest)
 			return
 		}
+		fmt.Println(requestData)
 		err = json.Unmarshal(body, &requestData)
 		if err != nil {
 			http.Error(w, "Błąd przetwarzania danych", http.StatusBadRequest)
 			return
 		}
-		fmt.Printf("Otrzymano dane: %v\n", requestData.NewPlot)
+		fmt.Printf("Otrzymano dane: %v\n", requestData)
 
 		// Pobieramy dzisiejszą datę
 		parsedDate := time.Now()
 
 		// Dodajemy zadanie do bazy danych
-		err = addNewTaskToDB(requestData.NewPlot, parsedDate)
+		if requestData.ID == -1 {
+			err = addNewTaskToDB(requestData.Plot, parsedDate)
+		} else {
+			err = CheckTaskToDB(requestData.ID, requestData.Done)
+		}
 		if err != nil {
 			http.Error(w, "Błąd podczas dodawania zadania do bazy", http.StatusInternalServerError)
 			return
