@@ -15,7 +15,7 @@ export default function App() {
         color={done ? 'rgb(80, 120, 80)' : undefined}
         style={styles.checkbox}
         value={done}
-        onValueChange={() => test(id, done, deadline, plot, fetchMessage)}
+        onValueChange={() => {console.log(Date.now()); test(id, done, deadline, plot, fetchMessage)}}
       />
     <Text style={styles.deadline}>{deadline}</Text>
     <View style={styles.text_container}>
@@ -32,9 +32,7 @@ export default function App() {
     // Wykonanie zapytania GET
     axios.get(serverUrl)
       .then(response => {
-        for (i in response.data) {
-          setTasks(response.data)
-        }
+        setTasks(response.data.sort((a, b) => a.id - b.id))
       })
       .catch(error => {
         console.error('Błąd połączenia z serwerem:', error);

@@ -7,6 +7,7 @@ export default function test(id, done, deadline, plot, fetchMessage) {
           const data = { id: id, plot: plot, start, done: !done }
           axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
             .then(response => {
+            console.log(Date.now())
               fetchMessage()
             })
             .catch(error => {
