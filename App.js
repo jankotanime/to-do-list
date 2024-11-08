@@ -15,7 +15,18 @@ export default function App() {
         color={done ? 'rgb(80, 120, 80)' : undefined}
         style={styles.checkbox}
         value={done}
-        onValueChange={() => {console.log(Date.now()); test(id, done, deadline, plot, fetchMessage)}}
+        onValueChange={() => {
+          console.log(Date.now());
+          changedTasks = tasks.map(elem => {
+            if (elem.id == id) {
+              console.log(elem)
+              return { id: elem.id, done: !elem.done, deadline: elem.deadline, plot: elem.plot }
+            } else return elem
+          })
+          console.log(changedTasks)
+          setTasks(changedTasks)
+          test(id, done, deadline, plot, fetchMessage)
+        }}
       />
     <Text style={styles.deadline}>{deadline}</Text>
     <View style={styles.text_container}>
@@ -28,7 +39,7 @@ export default function App() {
   const fetchMessage = () => {
     // Twój lokalny adres IP oraz port backendu
     // const serverUrl = `http://192.168.0.13:3000/api/message?x=${x}`; // Wstaw swój adres IP
-    const serverUrl = `http://192.168.0.13:3000/api/message`; // Wstaw swój adres IP
+    const serverUrl = `http://10.10.4.144:3000/api/message`; // Wstaw swój adres IP
     // Wykonanie zapytania GET
     axios.get(serverUrl)
       .then(response => {
@@ -53,16 +64,6 @@ export default function App() {
           {tasks.map((task) => (
             addTask(task.id, task.done, "20:00", task.plot)
           ))}
-          <View style={styles.title}>
-            <Text style={styles.text_main}>AAAAA</Text>
-          </View>
-          <View style={styles.title}>
-            <Text style={styles.text_main}>AAAAA</Text>
-          </View>
-          <View style={styles.title}>
-            <Text style={styles.text_main}>AAAAA</Text>
-          </View>
-          <Button title="button" onPress={() => {setX(x + 1);}} />
         </View>
       </View> 
       </ScrollView>

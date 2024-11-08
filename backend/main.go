@@ -170,7 +170,7 @@ func messageHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Pobieramy dzisiejszą datę
 		parsedDate := time.Now()
-
+		fmt.Println("xxxxx")
 		// Dodajemy zadanie do bazy danych
 		if requestData.ID == -1 {
 			err = addNewTaskToDB(requestData.Plot, parsedDate)
