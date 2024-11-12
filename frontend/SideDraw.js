@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, View, Text, StyleSheet, Dimensions, PanResponder, ScrollView } from 'react-native';
 import axios from 'axios';
 import ip from './variables'
+import { setOpened } from './NewTask';
 
 const start = Date.now()
 
@@ -59,7 +60,7 @@ export default function SideDrawer({fetchMessage}) {
             <Image source={require('./../images/settings.png')} style={styles.image}/>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={setTask}>
+        <TouchableOpacity onPress={setOpened}>
         <View style={styles.container}>
             <Text style={styles.text}>Add new task</Text>
         </View>

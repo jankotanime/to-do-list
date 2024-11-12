@@ -6,6 +6,7 @@ import CheckBox from 'expo-checkbox';
 import SideDrawer from './frontend/SideDraw.js';
 import test from './frontend/api.js'
 import ip from './frontend/variables.js'
+import NewTask from './frontend/NewTask.js';
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -69,6 +70,7 @@ export default function App() {
       </View> 
       </ScrollView>
       <SideDrawer fetchMessage={fetchMessage}/>
+      <NewTask fetchMessage={fetchMessage}/>
     </View>
   );
 }
