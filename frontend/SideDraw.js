@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, View, Text, StyleSheet, Dimensions, PanResponder, ScrollView } from 'react-native';
 import axios from 'axios';
+import ip from './variables'
 
 const start = Date.now()
 
@@ -69,7 +70,7 @@ export default function SideDrawer({fetchMessage}) {
           onChangeText={text => setInputText(text)}
         />
         <Button title="Dodaj" onPress={() => {
-          const serverUrl = `http://10.10.4.144:3000/api/message`; // Twój adres backendu 
+          const serverUrl = `http://${ip()}:3000/api/message`; // Twój adres backendu 
           const data = { id: -1, plot: inputText, start, done: false }
           setInputText('')
           axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych

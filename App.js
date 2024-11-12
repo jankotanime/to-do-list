@@ -5,6 +5,7 @@ import axios from 'axios';
 import CheckBox from 'expo-checkbox';
 import SideDrawer from './frontend/SideDraw.js';
 import test from './frontend/api.js'
+import ip from './frontend/variables.js'
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -39,7 +40,7 @@ export default function App() {
   const fetchMessage = () => {
     // Twój lokalny adres IP oraz port backendu
     // const serverUrl = `http://192.168.0.13:3000/api/message?x=${x}`; // Wstaw swój adres IP
-    const serverUrl = `http://10.10.4.144:3000/api/message`; // Wstaw swój adres IP
+    const serverUrl = `http://${ip()}:3000/api/message`; // Wstaw swój adres IP
     // Wykonanie zapytania GET
     axios.get(serverUrl)
       .then(response => {
