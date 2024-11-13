@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, View, Text, StyleSheet, Dimensions, PanResponder, ScrollView } from 'react-native';
 import axios from 'axios';
 import ip from './variables'
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 let setOpenedExternal;
 
@@ -27,14 +28,7 @@ export default function NewTask({fetchMessage}) {
                 />
             </View>
         );
-    } else {
-        return (
-            <View style={styles.main}>
-                <Text>aaaa</Text>
-            </View>
-        )
     }
-  
 }
 
 export const setOpened = () => {
@@ -51,6 +45,7 @@ const styles = StyleSheet.create({
     header: {
         width: '100%',
         alignItems: 'flex-end',
+        marginBottom: 20,
     },
     main : {
         position: 'absolute',
@@ -60,16 +55,15 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 5,
-        padding: 40,
+        padding: 20,
     },
     inputText: {
         height: 120,
         justifyContent: 'flex-start',
-        width: '100%',
         borderColor: 'gray',
         borderWidth: 1,
         paddingLeft: 10,
         borderRadius: 5,
-        marginBottom: 20,
+        margin: 20,
     }
 })
