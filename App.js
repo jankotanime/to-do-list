@@ -29,7 +29,7 @@ export default function App() {
           test(id, done, deadline, plot, fetchMessage)
         }}
       />
-    <Text style={styles.deadline}>{deadline}</Text>
+    <Text style={styles.deadline}>{deadline.toString().split("T")[1].slice(0, 5)}</Text>
     <View style={styles.text_container}>
       <Text style={styles.text_main}>{plot}</Text>
     </View>
@@ -45,7 +45,7 @@ export default function App() {
     axios.get(serverUrl)
       .then(response => {
         if (Array.isArray(response.data)) {
-          setTasks(response.data.sort((a, b) => a.id - b.id))
+          setTasks((response.data.sort((a, b) => a.id - b.id)))
         }
       })
       .catch(error => {
@@ -64,7 +64,7 @@ export default function App() {
   style={styles.scrollView}>
       <View style={styles.mask}>
         <View style={styles.main_container}>
-          {tasks.map((task) => (
+          {tasks.map(task => (
             addTask(task.id, task.done, task.deadline, task.plot)
           ))}
         </View>

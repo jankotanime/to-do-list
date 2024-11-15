@@ -103,6 +103,8 @@ func addNewTaskToDB(plot string, deadline time.Time) error {
 	_, err = dbpool.Exec(context.Background(), "INSERT INTO tasks (plot, deadline, done) VALUES ($1, $2, $3)", plot, deadline, false)
 	if err != nil {
 		return fmt.Errorf("błąd podczas dodawania zadania: %v", err)
+	} else {
+		fmt.Println(plot, deadline)
 	}
 
 	return nil

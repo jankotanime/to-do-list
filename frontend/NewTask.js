@@ -78,6 +78,7 @@ export default function NewTask({fetchMessage}) {
                     </Picker>
                 </View>
                 <Button title="Dodaj" onPress={() => {
+                    console.log(date)
                     const serverUrl = `http://${ip()}:3000/api/message`; // Twój adres backendu 
                     const data = { id: -1, plot: inputText, deadline: date, done: false }
                     console.log(data)
