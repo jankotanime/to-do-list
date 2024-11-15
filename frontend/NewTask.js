@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, View, Text, StyleSheet, Dimensions, Platform, PanResponder, ScrollView } from 'react-native';
+import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, TouchableWithoutFeedback, Keyboard, View, Text, StyleSheet, Dimensions, Platform, PanResponder, ScrollView } from 'react-native';
 import axios from 'axios';
 import ip from './variables'
 import { Picker } from '@react-native-picker/picker';
@@ -18,6 +18,11 @@ export default function NewTask({fetchMessage}) {
     const [show, setShow] = useState(false);
     const [selectedValue, setSelectedValue] = useState('java');
 
+    const handlePress = () => {
+        // Ukrywa klawiaturę
+        Keyboard.dismiss();
+    };
+
     const dateChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
         setShow(Platform.OS === 'ios');
@@ -27,6 +32,7 @@ export default function NewTask({fetchMessage}) {
     setOpenedExternal = setNewTask;
     if (isNewTask) {
         return (
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.main}>
                 <View style = {styles.header}>
                 {xImage}
@@ -71,7 +77,20 @@ export default function NewTask({fetchMessage}) {
                         <Picker.Item label="Co rok" value="year" />
                     </Picker>
                 </View>
+                <Button title="Dodaj" onPress={() => {
+                    const serverUrl = `http://${ip()}:3000/api/message`; // Twój adres backendu 
+                    const data = { id: -1, plot: inputText, date, done: false }
+                    setInputText('')
+                    axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
+                        .then(response => {
+                        fetchMessage()
+                        })
+                        .catch(error => {
+                        console.error('Błąd połączenia z serwerem:', error);
+                        });
+                }} />
             </View>
+            </TouchableWithoutFeedback>
         );
     }
 }

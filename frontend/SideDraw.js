@@ -1,15 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, View, Text, StyleSheet, Dimensions, PanResponder, ScrollView } from 'react-native';
-import axios from 'axios';
-import ip from './variables'
 import { setNewTask } from './NewTask';
-
-const start = Date.now()
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function SideDrawer({fetchMessage}) {
-  const [inputText, setInputText] = useState('');
   const translateX = useRef(new Animated.Value(-SCREEN_WIDTH * 0.75)).current; // Start panelu poza ekranem
   const [isSettings, setSettings] = useState(false);
   const [addTask, setTask] = useState(false);
@@ -64,24 +59,6 @@ export default function SideDrawer({fetchMessage}) {
         <View style={styles.container}>
             <Text style={styles.text}>Add new task</Text>
         </View>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Wprowadź treśc zadania"
-          value={inputText}
-          onChangeText={text => setInputText(text)}
-        />
-        <Button title="Dodaj" onPress={() => {
-          const serverUrl = `http://${ip()}:3000/api/message`; // Twój adres backendu 
-          const data = { id: -1, plot: inputText, start, done: false }
-          setInputText('')
-          axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
-            .then(response => {
-              fetchMessage()
-            })
-            .catch(error => {
-              console.error('Błąd połączenia z serwerem:', error);
-            });
-        }} />
         </TouchableOpacity>
       </View>
     </Animated.View>
