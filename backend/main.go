@@ -94,13 +94,11 @@ func addNewTaskToDB(plot string, deadline time.Time) error {
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"),
 	)
-
 	dbpool, err := pgxpool.New(context.Background(), dsn)
 	if err != nil {
 		log.Fatalf("Błąd połączenia z bazą danych: %v\n", err)
 	}
 	defer dbpool.Close()
-
 	// Zapytanie do wstawienia nowego zadania
 	_, err = dbpool.Exec(context.Background(), "INSERT INTO tasks (plot, deadline, done) VALUES ($1, $2, $3)", plot, deadline, false)
 	if err != nil {
@@ -160,20 +158,13 @@ func messageHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Nie udało się odczytać danych", http.StatusBadRequest)
 			return
 		}
-		fmt.Println(requestData)
 		err = json.Unmarshal(body, &requestData)
 		if err != nil {
 			http.Error(w, "Błąd przetwarzania danych", http.StatusBadRequest)
 			return
 		}
-		fmt.Printf("Otrzymano dane: %v\n", requestData)
-
-		// Pobieramy dzisiejszą datę
-		parsedDate := time.Now()
-		fmt.Println("xxxxx")
-		// Dodajemy zadanie do bazy danych
 		if requestData.ID == -1 {
-			err = addNewTaskToDB(requestData.Plot, parsedDate)
+			err = addNewTaskToDB(requestData.Plot, requestData.Deadline)
 		} else {
 			err = CheckTaskToDB(requestData.ID, requestData.Done)
 		}

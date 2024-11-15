@@ -79,7 +79,8 @@ export default function NewTask({fetchMessage}) {
                 </View>
                 <Button title="Dodaj" onPress={() => {
                     const serverUrl = `http://${ip()}:3000/api/message`; // Twój adres backendu 
-                    const data = { id: -1, plot: inputText, date, done: false }
+                    const data = { id: -1, plot: inputText, deadline: date, done: false }
+                    console.log(data)
                     setInputText('')
                     axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
                         .then(response => {

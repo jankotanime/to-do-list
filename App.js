@@ -18,7 +18,6 @@ export default function App() {
         style={styles.checkbox}
         value={done}
         onValueChange={() => {
-          console.log(Date.now());
           changedTasks = tasks.map(elem => {
             if (elem.id == id) {
               console.log(elem)
@@ -45,7 +44,9 @@ export default function App() {
     // Wykonanie zapytania GET
     axios.get(serverUrl)
       .then(response => {
-        setTasks(response.data.sort((a, b) => a.id - b.id))
+        if (Array.isArray(response.data)) {
+          setTasks(response.data.sort((a, b) => a.id - b.id))
+        }
       })
       .catch(error => {
         console.error('Błąd połączenia z serwerem:', error);
@@ -64,7 +65,7 @@ export default function App() {
       <View style={styles.mask}>
         <View style={styles.main_container}>
           {tasks.map((task) => (
-            addTask(task.id, task.done, "20:00", task.plot)
+            addTask(task.id, task.done, task.deadline, task.plot)
           ))}
         </View>
       </View> 
