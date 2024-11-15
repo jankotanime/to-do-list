@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     color: 'rgb(30, 30, 30)',
-    fontSize: 16,
+    fontSize: 20,
     textAlign: 'center'
   }
 });
