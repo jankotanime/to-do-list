@@ -16,7 +16,7 @@ export default function NewTask({fetchMessage}) {
     const [inputText, setInputText] = useState('');
     const [date, setDate] = useState(new Date());
     const [show, setShow] = useState(false);
-    const [selectedValue, setSelectedValue] = useState('java');
+    const [repeat, setRepeat] = useState('wr');
 
     const handlePress = () => {
         // Ukrywa klawiaturę
@@ -65,8 +65,8 @@ export default function NewTask({fetchMessage}) {
                         />
                     </View>
                     <Picker
-                        selectedValue={selectedValue}
-                        onValueChange={(itemValue) => setSelectedValue(itemValue)}
+                        selectedValue={repeat}
+                        onValueChange={(itemValue) => setRepeat(itemValue)}
                         style={styles.picker}
                         itemStyle={styles.pickerItem}
                     >
@@ -80,7 +80,7 @@ export default function NewTask({fetchMessage}) {
                 <Button title="Dodaj" onPress={() => {
                     console.log(date)
                     const serverUrl = `http://${ip()}:3000/api/message`; // Twój adres backendu 
-                    const data = { id: -1, plot: inputText, deadline: date, done: false }
+                    const data = { id: -1, plot: inputText, deadline: date, done: false, repeat: repeat }
                     console.log(data)
                     setInputText('')
                     axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych

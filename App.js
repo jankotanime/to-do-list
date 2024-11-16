@@ -11,7 +11,9 @@ import NewTask from './frontend/NewTask.js';
 export default function App() {
   const [tasks, setTasks] = useState([]);
   const [x, setX] = useState(3);
-  const addTask = (id, done, deadline, plot) => {
+  const addTask = (id, done, deadline, plot, repeat) => {
+    const taskTime = deadline.toString().split("T")[1].slice(0, 5)
+    const taskDayOfMonth = deadline.toString().split("T")[0].split("-")[2]
     const full_task = (<View key={id} style={styles.title}>
       <CheckBox
         color={done ? 'rgb(80, 120, 80)' : undefined}
@@ -20,21 +22,24 @@ export default function App() {
         onValueChange={() => {
           changedTasks = tasks.map(elem => {
             if (elem.id == id) {
-              console.log(elem)
-              return { id: elem.id, done: !elem.done, deadline: elem.deadline, plot: elem.plot }
+              return { id: elem.id, done: !elem.done, deadline: elem.deadline, plot: elem.plot, repeat: elem.repeat }
             } else return elem
           })
-          console.log(changedTasks)
           setTasks(changedTasks)
-          test(id, done, deadline, plot, fetchMessage)
+          test(id, done, deadline, plot, repeat, fetchMessage)
         }}
       />
-    <Text style={styles.deadline}>{deadline.toString().split("T")[1].slice(0, 5)}</Text>
+    <Text style={styles.deadline}>{taskTime}</Text>
     <View style={styles.text_container}>
       <Text style={styles.text_main}>{plot}</Text>
     </View>
     </View>)
-    return full_task
+    const now = new Date();
+    const time = `${now.getHours()}:${now.getMinutes()}`
+    const dayOfMonth = now.getDate()
+    if (repeat === "wr" && dayOfMonth == taskDayOfMonth) {
+      return full_task
+    }
   }
 
   const fetchMessage = () => {
@@ -65,7 +70,7 @@ export default function App() {
       <View style={styles.mask}>
         <View style={styles.main_container}>
           {tasks.map(task => (
-            addTask(task.id, task.done, task.deadline, task.plot)
+            addTask(task.id, task.done, task.deadline, task.plot, task.repeat)
           ))}
         </View>
       </View> 

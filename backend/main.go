@@ -25,6 +25,7 @@ type User struct {
 	Plot     string    `json:"plot"`
 	Deadline time.Time `json:"deadline"`
 	Done     bool      `json:"done"`
+	Repeat   string    `json:"repeat"`
 }
 
 type RequestData struct {
@@ -56,7 +57,7 @@ func getAllUsersFromDB() ([]User, error) {
 	}
 
 	// Zapytanie do bazy danych
-	rows, err := dbpool.Query(context.Background(), "SELECT id, plot, deadline, done FROM tasks")
+	rows, err := dbpool.Query(context.Background(), "SELECT id, plot, deadline, done, repeat FROM tasks")
 	if err != nil {
 		return nil, fmt.Errorf("błąd pobierania danych: %v", err)
 	}
@@ -66,7 +67,7 @@ func getAllUsersFromDB() ([]User, error) {
 	var users []User
 	for rows.Next() {
 		var user User
-		err := rows.Scan(&user.ID, &user.Plot, &user.Deadline, &user.Done)
+		err := rows.Scan(&user.ID, &user.Plot, &user.Deadline, &user.Done, &user.Repeat)
 		if err != nil {
 			return nil, fmt.Errorf("błąd skanowania danych: %v", err)
 		}
@@ -82,7 +83,7 @@ func getAllUsersFromDB() ([]User, error) {
 }
 
 // Funkcja do dodania nowego zadania do bazy danych
-func addNewTaskToDB(plot string, deadline time.Time) error {
+func addNewTaskToDB(plot string, deadline time.Time, repeat string) error {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Błąd przy ładowaniu pliku .env")
@@ -100,11 +101,11 @@ func addNewTaskToDB(plot string, deadline time.Time) error {
 	}
 	defer dbpool.Close()
 	// Zapytanie do wstawienia nowego zadania
-	_, err = dbpool.Exec(context.Background(), "INSERT INTO tasks (plot, deadline, done) VALUES ($1, $2, $3)", plot, deadline, false)
+	_, err = dbpool.Exec(context.Background(), "INSERT INTO tasks (plot, deadline, done, repeat) VALUES ($1, $2, $3, $4)", plot, deadline, false, repeat)
 	if err != nil {
 		return fmt.Errorf("błąd podczas dodawania zadania: %v", err)
 	} else {
-		fmt.Println(plot, deadline)
+		fmt.Println(plot, deadline, repeat)
 	}
 
 	return nil
@@ -166,7 +167,7 @@ func messageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if requestData.ID == -1 {
-			err = addNewTaskToDB(requestData.Plot, requestData.Deadline)
+			err = addNewTaskToDB(requestData.Plot, requestData.Deadline, requestData.Repeat)
 		} else {
 			err = CheckTaskToDB(requestData.ID, requestData.Done)
 		}
