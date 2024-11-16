@@ -39,6 +39,14 @@ export default function App() {
     if (repeat === "wr" && now.getFullYear() == taskDate.getFullYear() && 
     now.getMonth() == taskDate.getMonth() && now.getDay() == taskDate.getDay()) {
       return full_task
+    } else if (repeat === "day") {
+      return full_task
+    } else if (repeat === "week" && now.getDay() == taskDate.getDay()) {
+      return full_task
+    } else if (repeat === "month" && now.getDate() == taskDate.getDate()) {
+      return full_task
+    } else if (repeat === "year" && now.getDate() == taskDate.getDate() && now.getMonth() == taskDate.getMonth()) {
+      return full_task
     }
   }
 
