@@ -13,8 +13,12 @@ export default function App() {
   const [x, setX] = useState(3);
   const addTask = (id, done, deadline, plot, repeat) => {
     const taskDate = new Date(deadline)
-    const taskTime = `${taskDate.getHours().toString().padStart(2, '0')}:${taskDate.getMinutes().toString().padStart(2, '0')}`
-    const full_task = (<View key={id} style={styles.title}>
+    const taskHour = taskDate.getHours()
+    const taskMinutes = taskDate.getMinutes()
+    const taskTime = `${taskHour.toString().padStart(2, '0')}:${taskMinutes.toString().padStart(2, '0')}`
+    const now = new Date();
+    const full_task = (<View key={id} style={ (now.getHours() > taskHour || (now.getHours() == taskHour && 
+    now.getMinutes() == taskMinutes)) ? styles.titleButRed : styles.title }>
       <CheckBox
         color={done ? 'rgb(80, 120, 80)' : undefined}
         style={styles.checkbox}
@@ -34,8 +38,6 @@ export default function App() {
       <Text style={styles.text_main}>{plot}</Text>
     </View>
     </View>)
-    const now = new Date();
-    const time = `${now.getHours()}:${now.getMinutes()}`
     if (repeat === "wr" && now.getFullYear() == taskDate.getFullYear() && 
     now.getMonth() == taskDate.getMonth() && now.getDay() == taskDate.getDay()) {
       return full_task
@@ -58,8 +60,12 @@ export default function App() {
     axios.get(serverUrl)
       .then(response => {
         if (Array.isArray(response.data)) {
-          setTasks((response.data.sort((a, b) => a.id - b.id)))
-        }
+          setTasks((response.data.sort((a, b) => {
+            if (new Date(a.deadline).getHours() == new Date(b.deadline).getHours()) {
+              return new Date(a.deadline).getMinutes() - new Date(b.deadline).getMinutes()
+            }
+            return new Date(a.deadline).getHours() - new Date(b.deadline).getHours()
+        })))}
       })
       .catch(error => {
         console.error('Błąd połączenia z serwerem:', error);
@@ -117,6 +123,26 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 10,
     backgroundColor: 'rgb(250, 250, 255)',
+    width: '100%',
+    // Cień dla iOS
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    // Cień dla Androida
+    elevation: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
+  titleButRed: { //TODO
+    borderRadius: 10,
+    flexDirection: "row",
+    flex: 1,
+    gap: 10,
+    backgroundColor: 'rgb(250, 220, 220)',
     width: '100%',
     // Cień dla iOS
     shadowColor: '#000',
