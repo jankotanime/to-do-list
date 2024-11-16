@@ -12,8 +12,8 @@ export default function App() {
   const [tasks, setTasks] = useState([]);
   const [x, setX] = useState(3);
   const addTask = (id, done, deadline, plot, repeat) => {
-    const taskTime = deadline.toString().split("T")[1].slice(0, 5)
-    const taskDayOfMonth = deadline.toString().split("T")[0].split("-")[2]
+    const taskDate = new Date(deadline)
+    const taskTime = `${taskDate.getHours().toString().padStart(2, '0')}:${taskDate.getMinutes().toString().padStart(2, '0')}`
     const full_task = (<View key={id} style={styles.title}>
       <CheckBox
         color={done ? 'rgb(80, 120, 80)' : undefined}
@@ -36,8 +36,8 @@ export default function App() {
     </View>)
     const now = new Date();
     const time = `${now.getHours()}:${now.getMinutes()}`
-    const dayOfMonth = now.getDate()
-    if (repeat === "wr" && dayOfMonth == taskDayOfMonth) {
+    if (repeat === "wr" && now.getFullYear() == taskDate.getFullYear() && 
+    now.getMonth() == taskDate.getMonth() && now.getDay() == taskDate.getDay()) {
       return full_task
     }
   }
