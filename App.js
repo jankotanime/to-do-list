@@ -18,7 +18,7 @@ export default function App() {
     const taskTime = `${taskHour.toString().padStart(2, '0')}:${taskMinutes.toString().padStart(2, '0')}`
     const now = new Date();
     const full_task = (<View key={id} style={ (now.getHours() > taskHour || (now.getHours() == taskHour && 
-    now.getMinutes() == taskMinutes)) ? styles.titleButRed : styles.title }>
+    now.getMinutes() > taskMinutes)) ? styles.titleButRed : styles.title }>
       <CheckBox
         color={done ? 'rgb(80, 120, 80)' : undefined}
         style={styles.checkbox}

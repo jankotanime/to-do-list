@@ -60,6 +60,23 @@ export default function SideDrawer({fetchMessage}) {
             <Text style={styles.text}>Add new task</Text>
         </View>
         </TouchableOpacity>
+        <TouchableOpacity>
+        <View style={styles.container}>
+            <Text style={styles.text}>Add new event</Text>
+        </View>
+        </TouchableOpacity>
+        <View style={styles.events}>
+          <TouchableOpacity>
+          <View style={styles.event}>
+              <Text style={styles.text}>Event1</Text>
+          </View>
+          </TouchableOpacity>
+          <TouchableOpacity>
+          <View style={styles.event}>
+              <Text style={styles.text}>Event2</Text>
+          </View>
+          </TouchableOpacity>
+        </View>
       </View>
     </Animated.View>
   );
@@ -91,9 +108,36 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
   },
-  container: {
+  events: {
+    marginTop: 50,
+    height: 200,
+    width: '100%',
+    borderTopColor: 'gray',
+    borderTopWidth: 1,
+    backgroundColor: 'rgb(240, 240, 250)',
+  },
+  event: {
     width: '100%',
     height: 40,
+    marginTop: 20,
+    justifyContent: 'center',
+    paddingLeft: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgb(240, 240, 250)',
+    // Cień dla iOS
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    // Cień dla Androida
+    elevation: 10,
+  },
+  container: {
+    width: '100%',
+    height: 80,
     marginTop: 40,
     justifyContent: 'center',
     paddingLeft: 20,
