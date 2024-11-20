@@ -17,7 +17,7 @@ export default function SideDrawer({fetchMessage}) {
 
   const addEventTitle = (id, name, checked) => {
     const full_event = (
-      <View style={styles.text_container}>
+      <View key={id} style={styles.text_container}>
         <Text style={styles.text_main}>{name}</Text>
       </View>
     )
@@ -33,7 +33,6 @@ export default function SideDrawer({fetchMessage}) {
       onPanResponderMove: (event, gestureState) => {
         axios.get(serverUrl).then(response => {
         if (Array.isArray(response.data)) {
-          console.log(response.data)
           setEvents((response.data.sort((a, b) => a.id - b.id)))
         }})
         if (gestureState.dx > 0) {
@@ -87,7 +86,7 @@ export default function SideDrawer({fetchMessage}) {
         </TouchableOpacity>
         <View style={styles.events}>
           {events.map(event => (
-            addEvent(event.id, event.name, event.checked)
+            addEventTitle(event.id, event.name, event.checked)
           ))}
         </View>
       </View>
