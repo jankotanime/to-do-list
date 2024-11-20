@@ -18,10 +18,7 @@ export default function NewTask({fetchMessage}) {
     const [show, setShow] = useState(false);
     const [repeat, setRepeat] = useState('wr');
 
-    const handlePress = () => {
-        // Ukrywa klawiaturę
-        Keyboard.dismiss();
-    };
+
 
     const dateChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;

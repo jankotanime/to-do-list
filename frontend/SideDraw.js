@@ -1,13 +1,28 @@
 import React, { useRef, useState } from 'react';
 import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, View, Text, StyleSheet, Dimensions, PanResponder, ScrollView } from 'react-native';
 import { setNewTask } from './NewTask';
+import { setNewEvent } from './NewEvent';
+import axios from 'axios';
+import ip from './variables';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function SideDrawer({fetchMessage}) {
+  const serverUrl = `http://${ip()}:3000/api/event`;
   const translateX = useRef(new Animated.Value(-SCREEN_WIDTH * 0.75)).current; // Start panelu poza ekranem
   const [isSettings, setSettings] = useState(false);
   const [addTask, setTask] = useState(false);
+  const [addEvent, setEvent] = useState(false);
+  const [events, setEvents] = useState([]);
+
+  const addEventTitle = (id, name, checked) => {
+    const full_event = (
+      <View style={styles.text_container}>
+        <Text style={styles.text_main}>{name}</Text>
+      </View>
+    )
+    return full_event
+  }
 
   // PanResponder do obsługi gestów przesuwania
   const panResponder = useRef(
@@ -16,6 +31,11 @@ export default function SideDrawer({fetchMessage}) {
         return Math.abs(gestureState.dx) > 0;
       },
       onPanResponderMove: (event, gestureState) => {
+        axios.get(serverUrl).then(response => {
+        if (Array.isArray(response.data)) {
+          console.log(response.data)
+          setEvents((response.data.sort((a, b) => a.id - b.id)))
+        }})
         if (gestureState.dx > 0) {
           Animated.timing(translateX, {
             toValue: -20,
@@ -60,22 +80,15 @@ export default function SideDrawer({fetchMessage}) {
             <Text style={styles.text}>Add new task</Text>
         </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={setNewEvent}>
         <View style={styles.container}>
             <Text style={styles.text}>Add new event</Text>
         </View>
         </TouchableOpacity>
         <View style={styles.events}>
-          <TouchableOpacity>
-          <View style={styles.event}>
-              <Text style={styles.text}>Event1</Text>
-          </View>
-          </TouchableOpacity>
-          <TouchableOpacity>
-          <View style={styles.event}>
-              <Text style={styles.text}>Event2</Text>
-          </View>
-          </TouchableOpacity>
+          {events.map(event => (
+            addEvent(event.id, event.name, event.checked)
+          ))}
         </View>
       </View>
     </Animated.View>
@@ -83,6 +96,22 @@ export default function SideDrawer({fetchMessage}) {
 }
 
 const styles = StyleSheet.create({
+  text_main: {
+    width: '100%',
+    alignSelf: 'center',
+    color: 'rgb(30, 30, 30)',
+    fontSize: 20,
+    textAlign: 'center'
+  },
+  text_container: {
+    flex: 1,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgb(210, 210, 210)',
+    paddingLeft: 10,
+    alignItems: 'center', 
+    justifyContent: 'center',
+    height: '100%',
+  },
   inputText: {
     height: 40,
     width: '100%',
