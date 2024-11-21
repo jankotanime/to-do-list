@@ -84,11 +84,14 @@ export default function SideDrawer({fetchMessage}) {
             <Text style={styles.text}>Add new event</Text>
         </View>
         </TouchableOpacity>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}
+        style={styles.scrollView}>
         <View style={styles.events}>
           {events.map(event => (
             addEventTitle(event.id, event.name, event.checked)
           ))}
         </View>
+        </ScrollView>
       </View>
     </Animated.View>
   );
@@ -102,7 +105,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center'
   },
+  scrollViewContent: {
+  },
+  scrollView: {
+    padding: 0,
+    marginHorizontal: 0, // Marginesy wokół ScrollView
+    width: '100%',
+    height: '50%',
+    marginTop: 20,
+    borderColor: 'rgb(0, 0, 0)',
+    borderWidth: 1,
+  },
   text_container: {
+    marginBottom: 10,
+    marginTop: 10,
     flex: 1,
     borderLeftWidth: 1,
     borderLeftColor: 'rgb(210, 210, 210)',
@@ -137,17 +153,14 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   events: {
-    marginTop: 50,
-    height: 200,
     width: '100%',
-    borderTopColor: 'gray',
-    borderTopWidth: 1,
     backgroundColor: 'rgb(240, 240, 250)',
   },
   event: {
     width: '100%',
     height: 40,
-    marginTop: 20,
+    marginTop: 40,
+    marginBottom: 80,
     justifyContent: 'center',
     paddingLeft: 20,
     borderRadius: 10,

@@ -188,16 +188,31 @@ func eventHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Błąd przetwarzania danych", http.StatusBadRequest)
 			return
 		}
-		err = addNewEventToDB(requestData.Name)
-		if err != nil {
-			http.Error(w, "Błąd podczas dodawania zadania do bazy", http.StatusInternalServerError)
-			return
+		if requestData.ID == -1 {
+			err = addNewEventToDB(requestData.Name)
+			if err != nil {
+				http.Error(w, "Błąd podczas dodawania zadania do bazy", http.StatusInternalServerError)
+				return
+			}
+		} else {
+			users, err := getAllUsersFromDB()
+			if err == nil {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK) // Ustaw status 200 (OK)
+				json.NewEncoder(w).Encode(users)
+			} else {
+				response := Message{"Błąd! " + err.Error()}
+				fmt.Println(err)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusInternalServerError) // Ustaw status 500 (Internal Server Error)
+				json.NewEncoder(w).Encode(response)
+			}
 		}
-		users, err := getAllUsersFromDB()
+		events, err := getAllEventsFromDB()
 		if err == nil {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK) // Ustaw status 200 (OK)
-			json.NewEncoder(w).Encode(users)
+			json.NewEncoder(w).Encode(events)
 		} else {
 			response := Message{"Błąd! " + err.Error()}
 			fmt.Println(err)

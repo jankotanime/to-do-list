@@ -14,15 +14,6 @@ export default function NewEvent({fetchMessage}) {
     </TouchableOpacity>)
     const [isNewEvent, setNewEvent] = useState(false);
     const [inputText, setInputText] = useState('');
-    const [date, setDate] = useState(new Date());
-    const [show, setShow] = useState(false);
-    const [repeat, setRepeat] = useState('wr');
-
-    const dateChange = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShow(Platform.OS === 'ios');
-        setDate(currentDate);
-    };
 
     setOpenedExternal = setNewEvent;
     if (isNewEvent) {
@@ -35,43 +26,26 @@ export default function NewEvent({fetchMessage}) {
                 <View style = {styles.center}>
                     <TextInput
                         multiline={true}
-                        maxLength={400}
+                        maxLength={100}
                         style={styles.inputText}
-                        placeholder="Wprowadź treśc zadania"
+                        placeholder="Wprowadź nazwę wydarzenia"
                         value={inputText}
                         onChangeText={text => setInputText(text)}
                     />
-                    <View style = {styles.dates}>
-                        <DateTimePicker
-                        value={date}
-                        mode={'date'}
-                        is24Hour={true}
-                        display="default"
-                        onChange={dateChange}
-                        style={styles.time}
-                        />
-                        <DateTimePicker
-                        style={styles.time}
-                        value={date}
-                        mode={'time'}
-                        is24Hour={true}
-                        display="default"
-                        onChange={dateChange}
-                        />
-                    </View>
-                    <Picker
-                        selectedValue={repeat}
-                        onValueChange={(itemValue) => setRepeat(itemValue)}
-                        style={styles.picker}
-                        itemStyle={styles.pickerItem}
-                    >
-                        <Picker.Item label="Bez powtarzania" value="wr" />
-                        <Picker.Item label="Codziennie" value="day" />
-                        <Picker.Item label="Co tydzień" value="week" />
-                        <Picker.Item label="Co miesiąc" value="month" />
-                        <Picker.Item label="Co rok" value="year" />
-                    </Picker>
                 </View>
+                <Button title="Dodaj" onPress={() => {
+                    const serverUrl = `http://${ip()}:3000/api/event`; // Twój adres backendu 
+                    const data = { id: -1, name: inputText, checked: false }
+                    setInputText('')
+                    axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
+                        .then(response => {
+                            console.log("aaaaa")
+                        fetchMessage()
+                        })
+                        .catch(error => {
+                        console.error('Błąd połączenia z serwerem:', error);
+                        });
+                }} />
             </View>
             </TouchableWithoutFeedback>
         );
@@ -134,8 +108,8 @@ const styles = StyleSheet.create({
         marginTop: 40,
         marginBottom: 40,
         fontSize: 20,
-        height: 120,
-        justifyContent: 'flex-start',
+        height: 40,
+        textAlign: 'center',
         borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 5,
