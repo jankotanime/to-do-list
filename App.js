@@ -4,7 +4,7 @@ import { ScrollView, Text, View, Image, TouchableOpacity, Alert, StyleSheet, But
 import axios from 'axios';
 import CheckBox from 'expo-checkbox';
 import SideDrawer from './frontend/SideDraw.js';
-import test from './frontend/api.js'
+import { test } from './frontend/api.js'
 import ip from './frontend/variables.js'
 import NewTask from './frontend/NewTask.js';
 import NewEvent from './frontend/NewEvent.js';

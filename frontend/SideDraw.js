@@ -5,7 +5,7 @@ import { setNewEvent } from './NewEvent';
 import axios from 'axios';
 import ip from './variables';
 import CheckBox from 'expo-checkbox';
-import eventChanger from './api';
+import { eventChanger } from './api';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -13,28 +13,29 @@ export default function SideDrawer({fetchMessage}) {
   const serverUrl = `http://${ip()}:3000/api/event`;
   const translateX = useRef(new Animated.Value(-SCREEN_WIDTH * 0.75)).current; // Start panelu poza ekranem
   const [isSettings, setSettings] = useState(false);
-  const [addTask, setTask] = useState(false);
   const [addEvent, setEvent] = useState(false);
   const [events, setEvents] = useState([]);
 
   const addEventTitle = (id, name, checked) => {
     const full_event = (
-      <View key={id} style={styles.text_container}>
-        <CheckBox
+      <View key={id} style={styles.title}>
+      <CheckBox
         color={checked ? 'rgb(80, 120, 80)' : undefined}
         style={styles.checkbox}
         value={checked}
         onValueChange={() => {
-          // changedEvents = events.map(elem => {
-          //   if (elem.id == id) {
-          //     return { id: elem.id, name: elem.name, checked: !elem.checked }
-          //   } else return elem
-          // })
-          // setTasks(changedEvents)
+          changedEvents = events.map(elem => {
+            if (elem.id == id) {
+              return { id: elem.id, name: elem.name, checked: !elem.checked }
+            } else return elem
+          })
+          setEvents(changedEvents)
           eventChanger(id, name, checked, fetchMessage)
         }}
         />
+      <View style={styles.text_container}>
         <Text style={styles.text_main}>{name}</Text>
+      </View>
       </View>
     )
     return full_event
@@ -44,7 +45,7 @@ export default function SideDrawer({fetchMessage}) {
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dx) > 0;
+        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy)+20;
       },
       onPanResponderMove: (event, gestureState) => {
         axios.get(serverUrl).then(response => {
@@ -72,12 +73,7 @@ export default function SideDrawer({fetchMessage}) {
     Alert.alert('ustawienia');
   }
 
-  const task = () => {
-    Alert.alert('zadanie');
-  }
-
   isSettings ? settings() : undefined
-  addTask ? task() : undefined
 
   return (
     <Animated.View
@@ -114,6 +110,26 @@ export default function SideDrawer({fetchMessage}) {
 }
 
 const styles = StyleSheet.create({
+  title: {
+    borderRadius: 10,
+    flexDirection: "row",
+    flex: 1,
+    gap: 10,
+    backgroundColor: 'rgb(250, 250, 255)',
+    width: '100%',
+    // Cień dla iOS
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 3,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    // Cień dla Androida
+    elevation: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
   checkbox: {
     borderRadius: 5,
     marginLeft: 0,
@@ -230,9 +246,5 @@ const styles = StyleSheet.create({
   header: {
     width: '100%',
     alignItems: 'flex-end',
-  },
-  title: {
-    fontSize: 20,
-    marginBottom: 20,
   },
 });
