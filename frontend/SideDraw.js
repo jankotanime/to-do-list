@@ -4,6 +4,8 @@ import { setNewTask } from './NewTask';
 import { setNewEvent } from './NewEvent';
 import axios from 'axios';
 import ip from './variables';
+import CheckBox from 'expo-checkbox';
+import eventChanger from './api';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -18,6 +20,20 @@ export default function SideDrawer({fetchMessage}) {
   const addEventTitle = (id, name, checked) => {
     const full_event = (
       <View key={id} style={styles.text_container}>
+        <CheckBox
+        color={checked ? 'rgb(80, 120, 80)' : undefined}
+        style={styles.checkbox}
+        value={checked}
+        onValueChange={() => {
+          // changedEvents = events.map(elem => {
+          //   if (elem.id == id) {
+          //     return { id: elem.id, name: elem.name, checked: !elem.checked }
+          //   } else return elem
+          // })
+          // setTasks(changedEvents)
+          eventChanger(id, name, checked, fetchMessage)
+        }}
+        />
         <Text style={styles.text_main}>{name}</Text>
       </View>
     )
@@ -98,6 +114,13 @@ export default function SideDrawer({fetchMessage}) {
 }
 
 const styles = StyleSheet.create({
+  checkbox: {
+    borderRadius: 5,
+    marginLeft: 0,
+    alignSelf: 'center',
+    height: 20,
+    borderColor: 'rgb(110, 110, 110)',
+  },
   text_main: {
     width: '100%',
     alignSelf: 'center',

@@ -111,6 +111,32 @@ func getAllEventsFromDB() ([]Event, error) {
 	return events, nil
 }
 
+func CheckEventToDB(id int, checked bool) error {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Błąd przy ładowaniu pliku .env")
+	}
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
+
+	dbpool, err := pgxpool.New(context.Background(), dsn)
+	if err != nil {
+		log.Fatalf("Błąd połączenia z bazą danych: %v\n", err)
+	}
+	defer dbpool.Close()
+	// Zapytanie do wstawienia nowego zadania
+	_, err = dbpool.Exec(context.Background(), "UPDATE events SET checked=$2 WHERE id_event=$1", id, checked)
+	if err != nil {
+		return fmt.Errorf("błąd podczas dodawania zadania: %v", err)
+	}
+	return nil
+}
+
 // Handler dla endpointu "/api/message"
 func messageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
@@ -190,23 +216,12 @@ func eventHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if requestData.ID == -1 {
 			err = addNewEventToDB(requestData.Name)
-			if err != nil {
-				http.Error(w, "Błąd podczas dodawania zadania do bazy", http.StatusInternalServerError)
-				return
-			}
 		} else {
-			users, err := getAllUsersFromDB()
-			if err == nil {
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK) // Ustaw status 200 (OK)
-				json.NewEncoder(w).Encode(users)
-			} else {
-				response := Message{"Błąd! " + err.Error()}
-				fmt.Println(err)
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusInternalServerError) // Ustaw status 500 (Internal Server Error)
-				json.NewEncoder(w).Encode(response)
-			}
+			err = CheckEventToDB(requestData.ID, requestData.Checked)
+		}
+		if err != nil {
+			http.Error(w, "Błąd podczas dodawania zadania do bazy", http.StatusInternalServerError)
+			return
 		}
 		events, err := getAllEventsFromDB()
 		if err == nil {

@@ -37,9 +37,9 @@ export default function NewEvent({fetchMessage}) {
                     const serverUrl = `http://${ip()}:3000/api/event`; // Twój adres backendu 
                     const data = { id: -1, name: inputText, checked: false }
                     setInputText('')
+                    setNewEvent(false)
                     axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
                         .then(response => {
-                            console.log("aaaaa")
                         fetchMessage()
                         })
                         .catch(error => {
