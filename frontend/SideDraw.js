@@ -5,7 +5,7 @@ import { setNewEvent } from './NewEvent';
 import axios from 'axios';
 import ip from './variables';
 import CheckBox from 'expo-checkbox';
-import { eventChanger } from './api';
+import { eventChanger, deleteEvent } from './api';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -17,18 +17,17 @@ export default function SideDrawer({fetchMessage}) {
   const [addEvent, setEvent] = useState(false);
   const [events, setEvents] = useState([]);
 
-  const deleteAlert = (name) => {
+  const deleteAlert = (id, name, checked, fetchMessage) => {
     Alert.alert(
       "Confirm delete",
       `Are you sure you want to delete task ${name}?`,
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
         },
         {
           text: "OK",
-          onPress: () => console.log("OK Pressed"),
+          onPress: () => deleteEvent(id, name, checked, fetchMessage),
         },
       ],
       { cancelable: true }
@@ -36,7 +35,7 @@ export default function SideDrawer({fetchMessage}) {
   };
   
 
-  const addEventTitle = (id, name, checked) => {
+  const addEventTitle = (id, name, checked, fetchMessage) => {
     const full_event = (
       <View key={id} style={styles.title}>
       <CheckBox
@@ -60,7 +59,7 @@ export default function SideDrawer({fetchMessage}) {
           <TouchableOpacity onPress={() => {}}>
             <Image source={require('./../images/edit.png')} style={styles.imageTitle}/>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => {deleteAlert(name)}}>
+          <TouchableOpacity onPress={() => {deleteAlert(id, name, checked, fetchMessage)}}>
             <Image source={require('./../images/bin.png')} style={styles.imageTitle}/>
           </TouchableOpacity>
       </View>
@@ -128,7 +127,7 @@ export default function SideDrawer({fetchMessage}) {
         style={styles.scrollView}>
         <View style={styles.events}>
           {events.map(event => (
-            addEventTitle(event.id, event.name, event.checked)
+            addEventTitle(event.id, event.name, event.checked, fetchMessage)
           ))}
         </View>
         </ScrollView>

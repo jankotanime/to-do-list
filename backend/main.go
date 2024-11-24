@@ -14,8 +14,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type EventID struct {
+	ID int `json:"id"`
+}
+
 type Event struct {
-	ID      int    `json:"id"`
+	EventID
 	Name    string `json:"name"`
 	Checked bool   `json:"checked"`
 }
@@ -137,6 +141,31 @@ func CheckEventToDB(id int, checked bool) error {
 	return nil
 }
 
+func DeleteEventDB(id int) error {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Błąd przy ładowaniu pliku .env")
+	}
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
+
+	dbpool, err := pgxpool.New(context.Background(), dsn)
+	if err != nil {
+		log.Fatalf("Błąd połączenia z bazą danych: %v\n", err)
+	}
+	defer dbpool.Close()
+	_, err = dbpool.Exec(context.Background(), "DELETE FROM events WHERE id_event=$1", id)
+	if err != nil {
+		return fmt.Errorf("błąd podczas dodawania zadania: %v", err)
+	}
+	return nil
+}
+
 // Handler dla endpointu "/api/message"
 func messageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
@@ -235,12 +264,76 @@ func eventHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError) // Ustaw status 500 (Internal Server Error)
 			json.NewEncoder(w).Encode(response)
 		}
+	} else if r.Method == "DELETE" {
+		var requestData Event
+		fmt.Println(requestData.ID)
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Nie udało się odczytać danych", http.StatusBadRequest)
+			return
+		}
+		err = json.Unmarshal(body, &requestData)
+		if err != nil {
+			http.Error(w, "Błąd przetwarzania danych", http.StatusBadRequest)
+			return
+		}
+		err = DeleteEventDB(requestData.ID)
+		if err != nil {
+			http.Error(w, "Błąd podczas dodawania zadania do bazy", http.StatusInternalServerError)
+			return
+		}
+		events, err := getAllEventsFromDB()
+		if err == nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK) // Ustaw status 200 (OK)
+			json.NewEncoder(w).Encode(events)
+		} else {
+			response := Message{"Błąd! " + err.Error()}
+			fmt.Println(err)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError) // Ustaw status 500 (Internal Server Error)
+			json.NewEncoder(w).Encode(response)
+		}
+	}
+}
+
+func eventDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		var requestData Event
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Nie udało się odczytać danych", http.StatusBadRequest)
+			return
+		}
+		err = json.Unmarshal(body, &requestData)
+		if err != nil {
+			http.Error(w, "Błąd przetwarzania danych", http.StatusBadRequest)
+			return
+		}
+		err = DeleteEventDB(requestData.ID)
+		if err != nil {
+			http.Error(w, "Błąd podczas dodawania zadania do bazy", http.StatusInternalServerError)
+			return
+		}
+		events, err := getAllEventsFromDB()
+		if err == nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK) // Ustaw status 200 (OK)
+			json.NewEncoder(w).Encode(events)
+		} else {
+			response := Message{"Błąd! " + err.Error()}
+			fmt.Println(err)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError) // Ustaw status 500 (Internal Server Error)
+			json.NewEncoder(w).Encode(response)
+		}
 	}
 }
 
 func main() {
 	http.HandleFunc("/api/message", messageHandler)
 	http.HandleFunc("/api/event", eventHandler)
+	http.HandleFunc("/api/event/delete", eventDeleteHandler)
 
 	fmt.Println("Serwer uruchomiony na porcie 3000")
 	if err := http.ListenAndServe(":3000", nil); err != nil {
