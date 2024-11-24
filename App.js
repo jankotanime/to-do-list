@@ -161,7 +161,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginLeft: 0,
     alignSelf: 'center',
-    height: 20,
+    height: 30,
+    width: 30,
     borderColor: 'rgb(110, 110, 110)',
   },
   deadline: {

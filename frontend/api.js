@@ -7,7 +7,6 @@ export function test(id, done, deadline, plot, repeat, fetchMessage) {
           axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
             .then(response => {
             console.log(Date.now())
-              fetchMessage()
             })
             .catch(error => {
               console.error('Błąd połączenia z serwerem:', error);
