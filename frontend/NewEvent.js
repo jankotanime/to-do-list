@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, TouchableWithoutFeedback, Keyboard, View, Text, StyleSheet, Dimensions, Platform, PanResponder, ScrollView } from 'react-native';
+import { Button, TextInput, Alert, TouchableOpacity, Image, Animated, TouchableWithoutFeedback, Keyboard, View, Text, StyleSheet, Dimensions, Platform, PanResponder, ScrollView, ScrollViewComponent } from 'react-native';
 import axios from 'axios';
 import ip from './variables'
 import { Picker } from '@react-native-picker/picker';
@@ -8,23 +8,30 @@ import { getTaskEvents } from './api';
 
 let setOpenedExternal;
 
-export default function NewEvent({fetchMessage}, actEvent) {
-
+export default function NewEvent({fetchMessage}) {
     const xImage = (
-    <TouchableOpacity onPress={() => setOpenedExternal(false)}>
+    <TouchableOpacity onPress={() => {setOpenedExternal(-1)}}>
         <Image source={require('./../images/close.png')} style={styles.image}/>
     </TouchableOpacity>)
-    const [isNewEvent, setNewEvent] = useState(false);
+    const [isNewEvent, setNewEvent] = useState(-1);
+    const [actEvent, setActEvent] = useState(0)
     const [inputText, setInputText] = useState('');
     const [tasks, setTasks] = useState([])
-
+    const [newOpen, setOpened] = useState(false)
+    const [newTask, setNewTask] = useState({id: false, plot: '', deadline: Date.now()})
+    
     const getTaskEvents = () => {
         const serverUrl = `http://${ip()}:3000/api/event/tasks`;
-        result = []
+        const result = []
         axios.get(serverUrl)
           .then(response => {
             if (Array.isArray(response.data)) {
-              setTasks(response.data)
+                response.data.map(task => {
+                    if (task.id_event === isNewEvent) {
+                        result.push(task)
+                    }
+                })
+                setTasks(result)
             }
           })
           .catch(error => {
@@ -41,13 +48,25 @@ export default function NewEvent({fetchMessage}, actEvent) {
             </Text>
         </View>
         )
-        return (result)
+        return result
     }
 
-    setOpenedExternal = setNewEvent;
-    if (isNewEvent) {
-        {getTaskEvents()}
-        return (
+    const guwnoguwnoguwno = () => {
+        x = newTask.id ? (
+            <TextInput
+            value={newTask.plot}
+            style={styles.inputText}
+            onChangeText={text => {setNewTask({id: true, plot: text, deadline: Date.now()})}}>
+            </TextInput>) : (<TouchableOpacity onPress={() => {
+                        setNewTask({id: true, plot: '', deadline: Date.now()})
+                    }}>
+                        <Image source={require('./../images/add.png')} style={styles.image}/>
+                    </TouchableOpacity>)
+        return x
+    }
+
+    const resultScreen = () => {
+        x = (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.main}>
                 <View style = {styles.header}>
@@ -63,11 +82,17 @@ export default function NewEvent({fetchMessage}, actEvent) {
                         onChangeText={text => setInputText(text)}
                     />
                     <ScrollView contentContainerStyle={styles.scrollViewContent}
+                    persistentScrollbar={true}
                         style={styles.scrollView}>
-                        {tasks.map(task => (
-                            task.id_event === actEvent ? taskTitle(task.id, task.plot, task.done, task.deadline, task.id_event) : null
-                        ))}
-                        
+                        <View style= {styles.tasks}>
+                        {tasks.length != 0 ? tasks.map(task => (
+                            taskTitle(task.id, task.plot, task.done, task.deadline, task.id_event)
+                        )) : null}
+                    <View style = {styles.title}>
+                    {console.log(newTask.id)}
+                    {guwnoguwnoguwno()}
+                    </View>
+                    </View>
                     </ScrollView>
                 </View>
                 <Button title="Dodaj" onPress={() => {
@@ -86,28 +111,45 @@ export default function NewEvent({fetchMessage}, actEvent) {
             </View>
             </TouchableWithoutFeedback>
         );
+        return x
+    }
+
+    setOpenedExternal = setNewEvent;
+    if (isNewEvent !== -1) {
+        {tasks.length === 0 ? getTaskEvents(isNewEvent) : null}
+        return resultScreen()
     }
 }
 
-export const setNewEvent = () => {
+export const setNewEvent = (event) => {
     if (setOpenedExternal) {
-        setOpenedExternal(true)
+        setOpenedExternal(event)
     }
 };
 
 const styles = StyleSheet.create({
+    scrollViewContent: {
+    },
+    tasks: {
+        height: '100%',
+        paddingTop: 10,
+        width: '100%',
+        backgroundColor: 'rgb(240, 240, 250)',
+    },
+    addImage: {
+        flex: 1
+    },
     scrollView: {
+        flex: 1,
         padding: 0,
         marginHorizontal: 0, // Marginesy wokół ScrollView
         width: '100%',
-        height: '50%',
+        height: '100%',
         marginTop: 20,
         borderColor: 'rgb(0, 0, 0)',
         borderWidth: 1,
       },
     title: {
-        position: 'relative',
-        overflow: 'visible',
         borderRadius: 10,
         flexDirection: "row",
         flex: 1,
@@ -162,7 +204,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     main : {
-        position: 'absolute',
         height: '100%',
         width: '100%',
         backgroundColor: 'rgb(240, 240, 250)',
