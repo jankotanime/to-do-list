@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
@@ -22,6 +23,14 @@ type Event struct {
 	EventID
 	Name    string `json:"name"`
 	Checked bool   `json:"checked"`
+}
+
+type EventTask struct {
+	ID       int       `json:"id"`
+	Plot     string    `json:"plot"`
+	Deadline time.Time `json:"deadline"`
+	Done     bool      `json:"done"`
+	ID_Event int       `json:"id_event"`
 }
 
 // type eventTask struct {
@@ -101,6 +110,56 @@ func getAllEventsFromDB() ([]Event, error) {
 	for rows.Next() {
 		var event Event
 		err := rows.Scan(&event.ID, &event.Name, &event.Checked)
+		if err != nil {
+			return nil, fmt.Errorf("błąd skanowania danych: %v", err)
+		}
+		events = append(events, event)
+	}
+
+	// Sprawdzanie, czy wystąpił błąd po iteracji
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("błąd przy iteracji wyników: %v", err)
+	}
+
+	return events, nil
+}
+
+func getAllEventTasksFromDB() ([]EventTask, error) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Błąd przy ładowaniu pliku .env")
+	}
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
+
+	dbpool, err := pgxpool.New(context.Background(), dsn)
+	if err != nil {
+		log.Fatalf("Błąd połączenia z bazą danych: %v\n", err)
+	}
+	defer dbpool.Close()
+
+	err = dbpool.Ping(context.Background())
+	if err != nil {
+		log.Fatalf("Błąd pingowania bazy danych: %v\n", err)
+	}
+
+	// Zapytanie do bazy danych
+	rows, err := dbpool.Query(context.Background(), "SELECT id_event_task, plot, deadline, done, id_event FROM event_tasks")
+	if err != nil {
+		return nil, fmt.Errorf("błąd pobierania danych: %v", err)
+	}
+	defer rows.Close()
+
+	// Przechowywanie wyników w tablicy
+	var events []EventTask
+	for rows.Next() {
+		var event EventTask
+		err := rows.Scan(&event.ID, &event.Plot, &event.Deadline, &event.Done, &event.ID_Event)
 		if err != nil {
 			return nil, fmt.Errorf("błąd skanowania danych: %v", err)
 		}
@@ -330,10 +389,28 @@ func eventDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func eventTaskHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		events, err := getAllEventTasksFromDB()
+		if err == nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK) // Ustaw status 200 (OK)
+			json.NewEncoder(w).Encode(events)
+		} else {
+			response := Message{"Błąd! " + err.Error()}
+			fmt.Println(err)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError) // Ustaw status 500 (Internal Server Error)
+			json.NewEncoder(w).Encode(response)
+		}
+	}
+}
+
 func main() {
 	http.HandleFunc("/api/message", messageHandler)
 	http.HandleFunc("/api/event", eventHandler)
 	http.HandleFunc("/api/event/delete", eventDeleteHandler)
+	http.HandleFunc("/api/event/tasks", eventTaskHandler)
 
 	fmt.Println("Serwer uruchomiony na porcie 3000")
 	if err := http.ListenAndServe(":3000", nil); err != nil {

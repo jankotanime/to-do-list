@@ -4,19 +4,49 @@ import axios from 'axios';
 import ip from './variables'
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getTaskEvents } from './api';
 
 let setOpenedExternal;
 
-export default function NewEvent({fetchMessage}) {
+export default function NewEvent({fetchMessage}, actEvent) {
+
     const xImage = (
     <TouchableOpacity onPress={() => setOpenedExternal(false)}>
         <Image source={require('./../images/close.png')} style={styles.image}/>
     </TouchableOpacity>)
     const [isNewEvent, setNewEvent] = useState(false);
     const [inputText, setInputText] = useState('');
+    const [tasks, setTasks] = useState([])
+
+    const getTaskEvents = () => {
+        const serverUrl = `http://${ip()}:3000/api/event/tasks`;
+        result = []
+        axios.get(serverUrl)
+          .then(response => {
+            if (Array.isArray(response.data)) {
+              setTasks(response.data)
+            }
+          })
+          .catch(error => {
+            console.log('Błąd połeczenia', error)
+          })
+        return result
+      }
+
+    const taskTitle = (id, plot, done, deadline, id_event) => {
+        result = (
+        <View style = {styles.title} key = {id}>
+            <Text>
+                {plot}
+            </Text>
+        </View>
+        )
+        return (result)
+    }
 
     setOpenedExternal = setNewEvent;
     if (isNewEvent) {
+        {getTaskEvents()}
         return (
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.main}>
@@ -32,6 +62,13 @@ export default function NewEvent({fetchMessage}) {
                         value={inputText}
                         onChangeText={text => setInputText(text)}
                     />
+                    <ScrollView contentContainerStyle={styles.scrollViewContent}
+                        style={styles.scrollView}>
+                        {tasks.map(task => (
+                            task.id_event === actEvent ? taskTitle(task.id, task.plot, task.done, task.deadline, task.id_event) : null
+                        ))}
+                        
+                    </ScrollView>
                 </View>
                 <Button title="Dodaj" onPress={() => {
                     const serverUrl = `http://${ip()}:3000/api/event`; // Twój adres backendu 
@@ -59,6 +96,37 @@ export const setNewEvent = () => {
 };
 
 const styles = StyleSheet.create({
+    scrollView: {
+        padding: 0,
+        marginHorizontal: 0, // Marginesy wokół ScrollView
+        width: '100%',
+        height: '50%',
+        marginTop: 20,
+        borderColor: 'rgb(0, 0, 0)',
+        borderWidth: 1,
+      },
+    title: {
+        position: 'relative',
+        overflow: 'visible',
+        borderRadius: 10,
+        flexDirection: "row",
+        flex: 1,
+        gap: 10,
+        backgroundColor: 'rgb(250, 250, 255)',
+        width: '100%',
+        // Cień dla iOS
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 3,
+          height: 3,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        // Cień dla Androida
+        elevation: 10,
+        padding: 10,
+        marginBottom: 10,
+      },
     pickerItem: {
             height: 120
         },
