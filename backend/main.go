@@ -409,6 +409,7 @@ func eventTaskHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/api/message", messageHandler)
 	http.HandleFunc("/api/event", eventHandler)
+	http.HandleFunc("/api/newevent", eventHandler)
 	http.HandleFunc("/api/event/delete", eventDeleteHandler)
 	http.HandleFunc("/api/event/tasks", eventTaskHandler)
 

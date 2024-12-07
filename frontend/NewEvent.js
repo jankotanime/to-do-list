@@ -7,6 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { getTaskEvents } from './api';
 
 let setOpenedExternal;
+let setNewEventExported;
 
 export default function NewEvent({fetchMessage}) {
     const xImage = (
@@ -23,6 +24,35 @@ export default function NewEvent({fetchMessage}) {
     const [tasks, setTasks] = useState([])
     const [newOpen, setOpened] = useState(false)
     const [newTask, setNewTask] = useState([])
+    const [show, setShow] = useState(false);
+
+    const dateChange = (event, selectedDate, id) => {
+        const currentDate = selectedDate || date;
+        setShow(Platform.OS === 'ios');
+        const actTask = tasks.length != 0 ? tasks.map(task => {
+            if (task.id === id) {
+                return {id: task.id, plot: task.plot, done: task.done, deadline: currentDate, id_event: task.id_event}
+            }
+            else {
+                return task
+            }
+        }) : null
+        setTasks(actTask)
+    };
+
+    const dateChangeNewTasks = (event, selectedDate, id) => {
+        const currentDate = selectedDate || date;
+        setShow(Platform.OS === 'ios');
+        const actTask = newTask.length != 0 ? newTask.map(task => {
+            if (task.id === id) {
+                return {id: task.id, plot: task.plot, deadline: currentDate, id_event: task.id_event}
+            }
+            else {
+                return task
+            }
+        }) : null
+        setNewTask(actTask)
+    };
     
     const getTaskEvents = () => {
         const serverUrl = `http://${ip()}:3000/api/event/tasks`;
@@ -52,7 +82,7 @@ export default function NewEvent({fetchMessage}) {
                 onChangeText={(text) => {
                     const actTask = tasks.length != 0 ? tasks.map(task => {
                         if (task.id === id) {
-                            return {id: id, plot: text, deadline: Date.now()}
+                            return {id: id, plot: text, done: done, deadline: deadline, id_event: id_event}
                         }
                         else {
                             return task
@@ -61,6 +91,13 @@ export default function NewEvent({fetchMessage}) {
                     setTasks(actTask)
                 }}>
             </TextInput>
+            <DateTimePicker
+                value={new Date(deadline)}
+                mode={'time'}
+                is24Hour={true}
+                display="default"
+                onChange={(event, selectedDate) => dateChange(event, selectedDate, id)}
+            />
         </View>)
         return result
     }
@@ -73,7 +110,7 @@ export default function NewEvent({fetchMessage}) {
                 onChangeText={(text) => {
                     const actNewTask = newTask.length != 0 ? newTask.map(task => {
                         if (task.id === id) {
-                            return {id: id, plot: text, deadline: Date.now()}
+                            return {id: id, plot: text, deadline: deadline}
                         }
                         else {
                             return task
@@ -82,6 +119,13 @@ export default function NewEvent({fetchMessage}) {
                     setNewTask(actNewTask)
                 }}>
             </TextInput>
+            <DateTimePicker
+                value={new Date(deadline)}
+                mode={'time'}
+                is24Hour={true}
+                display="default"
+                onChange={(event, selectedDate) => dateChangeNewTasks(event, selectedDate, id)}
+            />
         </View>)
         return result
     }
@@ -135,11 +179,12 @@ export default function NewEvent({fetchMessage}) {
                     </ScrollView>
                 </View>
                 <Button title="Dodaj" onPress={() => {
-                    const serverUrl = `http://${ip()}:3000/api/event`; // Twój adres backendu 
+                    var serverUrl = `http://${ip()}:3000/api/actevent`
+                    isNewEvent === 0 ? serverUrl = `http://${ip()}:3000/api/newevent` : null
                     const data = { id: -1, name: inputText, checked: false }
                     setInputText('')
                     setNewEvent(false)
-                    axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
+                    axios.post(serverUrl, data)
                         .then(response => {
                         fetchMessage()
                         })
@@ -154,15 +199,17 @@ export default function NewEvent({fetchMessage}) {
     }
 
     setOpenedExternal = setNewEvent;
+    setNewEventExported = setInputText;
     if (isNewEvent !== -1) {
         {tasks.length === 0 ? getTaskEvents(isNewEvent) : null}
         return resultScreen()
     }
 }
 
-export const setNewEvent = (event) => {
+export const setNewEvent = (event, title) => {
     if (setOpenedExternal) {
         setOpenedExternal(event)
+        setNewEventExported(title)
     }
 };
 
@@ -261,6 +308,6 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 5,
-        width: '90%'
+        width: '70%'
     }
 })
