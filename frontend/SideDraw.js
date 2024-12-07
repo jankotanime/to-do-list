@@ -56,7 +56,7 @@ export default function SideDrawer({fetchMessage}) {
         <Text style={styles.text_main}>{name}</Text>
       </View>
       <View style={styles.right}>
-          <TouchableOpacity onPress={() => setNewEvent(id)}>
+          <TouchableOpacity onPress={() => setNewEvent(id, name)}>
             <Image source={require('./../images/edit.png')} style={styles.imageTitle}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => {deleteAlert(id, name, checked, fetchMessage)}}>
@@ -118,7 +118,7 @@ export default function SideDrawer({fetchMessage}) {
             <Text style={styles.text}>Add new task</Text>
         </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setNewEvent(0)}>
+        <TouchableOpacity onPress={() => setNewEvent(0, '')}>
         <View style={styles.container}>
             <Text style={styles.text}>Add new event</Text>
         </View>

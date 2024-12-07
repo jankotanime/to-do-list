@@ -10,7 +10,11 @@ let setOpenedExternal;
 
 export default function NewEvent({fetchMessage}) {
     const xImage = (
-    <TouchableOpacity onPress={() => {setOpenedExternal(-1)}}>
+    <TouchableOpacity onPress={() => {
+        setNewTask([])
+        setTasks([])
+        setOpenedExternal(-1)
+        }}>
         <Image source={require('./../images/close.png')} style={styles.image}/>
     </TouchableOpacity>)
     const [isNewEvent, setNewEvent] = useState(-1);
@@ -18,7 +22,7 @@ export default function NewEvent({fetchMessage}) {
     const [inputText, setInputText] = useState('');
     const [tasks, setTasks] = useState([])
     const [newOpen, setOpened] = useState(false)
-    const [newTask, setNewTask] = useState({id: false, plot: '', deadline: Date.now()})
+    const [newTask, setNewTask] = useState([])
     
     const getTaskEvents = () => {
         const serverUrl = `http://${ip()}:3000/api/event/tasks`;
@@ -41,33 +45,68 @@ export default function NewEvent({fetchMessage}) {
       }
 
     const taskTitle = (id, plot, done, deadline, id_event) => {
-        result = (
-        <View style = {styles.title} key = {id}>
-            <Text>
-                {plot}
-            </Text>
-        </View>
-        )
+        result = (<View style = {styles.title} key = {id}>
+            <TextInput
+                value={plot}
+                style={styles.inputText}
+                onChangeText={(text) => {
+                    const actTask = tasks.length != 0 ? tasks.map(task => {
+                        if (task.id === id) {
+                            return {id: id, plot: text, deadline: Date.now()}
+                        }
+                        else {
+                            return task
+                        }
+                    }) : null
+                    setTasks(actTask)
+                }}>
+            </TextInput>
+        </View>)
         return result
     }
 
-    const guwnoguwnoguwno = () => {
-        x = newTask.id ? (
+    const newTaskTitle = (id, plot, deadline) => {
+        result = (<View style = {styles.title} key = {id}>
             <TextInput
-            value={newTask.plot}
-            style={styles.inputText}
-            onChangeText={text => {setNewTask({id: true, plot: text, deadline: Date.now()})}}>
-            </TextInput>) : (<TouchableOpacity onPress={() => {
-                        setNewTask({id: true, plot: '', deadline: Date.now()})
-                    }}>
+                value={plot}
+                style={styles.inputText}
+                onChangeText={(text) => {
+                    const actNewTask = newTask.length != 0 ? newTask.map(task => {
+                        if (task.id === id) {
+                            return {id: id, plot: text, deadline: Date.now()}
+                        }
+                        else {
+                            return task
+                        }
+                    }) : null
+                    setNewTask(actNewTask)
+                }}>
+            </TextInput>
+        </View>)
+        return result
+    }
+
+    const newTaskLogic = () => {
+        x = (<View>
+                {newTask.length != 0 ? 
+                    newTask.map(task => (
+                    newTaskTitle(task.id, task.plot, task.deadline)
+                )) : null}
+                <TouchableOpacity onPress={() => {
+                    const newNewTask = {id: newTask.length, plot: '', deadline: Date.now()}
+                    setNewTask([...newTask, newNewTask])
+                }}>
+                    <View style={styles.title}>
                         <Image source={require('./../images/add.png')} style={styles.image}/>
-                    </TouchableOpacity>)
+                    </View>
+                </TouchableOpacity>
+            </View>)
         return x
     }
 
     const resultScreen = () => {
         x = (
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <TouchableWithoutFeedback onPress = {Keyboard.dismiss}>
             <View style={styles.main}>
                 <View style = {styles.header}>
                 {xImage}
@@ -83,16 +122,16 @@ export default function NewEvent({fetchMessage}) {
                     />
                     <ScrollView contentContainerStyle={styles.scrollViewContent}
                     persistentScrollbar={true}
+                    keyboardShouldPersistTaps="handled"
                         style={styles.scrollView}>
+                            <TouchableWithoutFeedback onPress = {Keyboard.dismiss}>
                         <View style= {styles.tasks}>
                         {tasks.length != 0 ? tasks.map(task => (
                             taskTitle(task.id, task.plot, task.done, task.deadline, task.id_event)
                         )) : null}
-                    <View style = {styles.title}>
-                    {console.log(newTask.id)}
-                    {guwnoguwnoguwno()}
+                    {newTaskLogic()}
                     </View>
-                    </View>
+                    </TouchableWithoutFeedback>
                     </ScrollView>
                 </View>
                 <Button title="Dodaj" onPress={() => {
