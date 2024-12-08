@@ -4,13 +4,14 @@ import { ScrollView, Text, View, Image, TouchableOpacity, Alert, StyleSheet, But
 import axios from 'axios';
 import CheckBox from 'expo-checkbox';
 import SideDrawer from './frontend/SideDraw.js';
-import { test } from './frontend/api.js'
+import { test, checkEventTask } from './frontend/api.js'
 import ip from './frontend/variables.js'
 import NewTask from './frontend/NewTask.js';
 import NewEvent from './frontend/NewEvent.js';
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
+  const [eventTasks, setEventTasks] = useState([]);
   const [x, setX] = useState(3);
   const addTask = (id, done, deadline, plot, repeat) => {
     const taskDate = new Date(deadline)
@@ -52,6 +53,36 @@ export default function App() {
       return full_task
     }
   }
+  const addEventTask = (id, done, deadline, plot, id_event) => {
+    const taskDate = new Date(deadline)
+    const taskHour = taskDate.getHours()
+    const taskMinutes = taskDate.getMinutes()
+    const taskTime = `${taskHour.toString().padStart(2, '0')}:${taskMinutes.toString().padStart(2, '0')}`
+    const now = new Date();
+    const full_task = (<View key={id} style={ (now.getHours() > taskHour || (now.getHours() == taskHour && 
+    now.getMinutes() > taskMinutes)) ? styles.titleButRed : styles.title }>
+      <CheckBox
+        color={done ? 'rgb(80, 120, 80)' : undefined}
+        style={styles.checkbox}
+        value={done}
+        onValueChange={() => {
+          changedTasks = eventTasks.map(elem => {
+            console.log(elem)
+            if (elem.id == id) {
+              return { id: elem.id, done: !elem.done, deadline: elem.deadline, plot: elem.plot, id_event: elem.id_event }
+            } else return elem
+          })
+          setEventTasks(changedTasks)
+          checkEventTask(id, done, deadline, plot, id_event, fetchMessage)
+        }}
+      />
+    <Text style={styles.deadline}>{taskTime}</Text>
+    <View style={styles.text_container}>
+      <Text style={styles.text_main}>{plot}</Text>
+    </View>
+    </View>)
+    return full_task
+  }
 
   const fetchMessage = () => {
     const serverUrl = `http://${ip()}:3000/api/message`; // Wstaw swój adres IP
@@ -61,6 +92,24 @@ export default function App() {
         if (Array.isArray(response.data)) {
           setTasks((response.data.sort((a, b) => {
             if (new Date(a.deadline).getHours() == new Date(b.deadline).getHours()) {
+              return new Date(a.deadline).getMinutes() - new Date(b.deadline).getMinutes()
+            }
+            return new Date(a.deadline).getHours() - new Date(b.deadline).getHours()
+        })))}
+      })
+      .catch(error => {
+        console.error('Błąd połączenia z serwerem:', error);
+        setMessage('Błąd połączenia z serwerem');
+      });
+    const secondServerUrl = `http://${ip()}:3000/api/event/tasks/specific`;
+    axios.get(secondServerUrl)
+      .then(response => {
+        if (Array.isArray(response.data)) {
+          setEventTasks((response.data.sort((a, b) => {
+            if (new Date(a.deadline).getHours() == new Date(b.deadline).getHours()) {
+              if (new Date(a.deadline).getMinutes() == new Date(b.deadline).getMinutes()) {
+                return a.id - b.id
+              }
               return new Date(a.deadline).getMinutes() - new Date(b.deadline).getMinutes()
             }
             return new Date(a.deadline).getHours() - new Date(b.deadline).getHours()
@@ -84,6 +133,9 @@ export default function App() {
         <View style={styles.main_container}>
           {tasks.map(task => (
             addTask(task.id, task.done, task.deadline, task.plot, task.repeat)
+          ))}
+          {eventTasks.map(task => (
+            addEventTask(task.id, task.done, task.deadline, task.plot, task.id_event)
           ))}
         </View>
       </View> 

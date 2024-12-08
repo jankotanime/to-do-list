@@ -13,6 +13,18 @@ export function test(id, done, deadline, plot, repeat, fetchMessage) {
             });
 }
 
+export function checkEventTask(id, done, deadline, plot, id_event, fetchMessage) {
+  const serverUrl = `http://${ip()}:3000/api/event/tasks`; // Twój adres backendu 
+        const data = { id: id, plot: plot, deadline: deadline, done: !done, id_event: id_event }
+        axios.post(serverUrl, data)  // Zmiana na `post` i przekazanie danych
+          .then(response => {
+          console.log(Date.now())
+          })
+          .catch(error => {
+            console.error('Błąd połączenia z serwerem:', error);
+          });
+}
+
 export function eventChanger(id, name, checked, fetchMessage) {
   const serverUrl = `http://${ip()}:3000/api/event`; // Twój adres backendu 
         const data = { id: id, name: name, checked: !checked }
