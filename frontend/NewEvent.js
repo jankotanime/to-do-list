@@ -179,18 +179,30 @@ export default function NewEvent({fetchMessage}) {
                     </ScrollView>
                 </View>
                 <Button title="Dodaj" onPress={() => {
-                    var serverUrl = `http://${ip()}:3000/api/actevent`
-                    isNewEvent === 0 ? serverUrl = `http://${ip()}:3000/api/newevent` : null
-                    const data = { id: -1, name: inputText, checked: false }
-                    setInputText('')
-                    setNewEvent(false)
-                    axios.post(serverUrl, data)
+                    const newEvent = (inputText) => {
+                        console.log(isNewEvent)
+                        const data = { id: isNewEvent, name: inputText }
+                        const serverUrl = `http://${ip()}:3000/api/newevent`
+                        axios.post(serverUrl, data)
                         .then(response => {
-                        fetchMessage()
+                            fetchMessage()
                         })
                         .catch(error => {
-                        console.error('Błąd połączenia z serwerem:', error);
+                            console.error('Błąd połączenia z serwerem:', error);
                         });
+                    }
+                    newEvent(inputText)
+                    const serverUrl = `http://${ip()}:3000/api/eventtasks`
+                    const data = [tasks, newTask]
+                    axios.post(serverUrl, data)
+                    .then(response => {
+                        fetchMessage()
+                    })
+                    .catch(error => {
+                        console.error('Błąd połączenia z serwerem:', error);
+                    });
+                    setInputText('')
+                    setNewEvent(-1)
                 }} />
             </View>
             </TouchableWithoutFeedback>
